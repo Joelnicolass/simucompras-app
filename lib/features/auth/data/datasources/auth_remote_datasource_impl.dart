@@ -1,4 +1,4 @@
-import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_clients.dart';
 import '../../domain/datasources/auth_remote_datasource.dart';
 import '../../domain/entities/access_token.dart';
 import '../mappers/access_token_mapper.dart';
@@ -7,7 +7,7 @@ import '../models/access_token_model.dart';
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   AuthRemoteDatasourceImpl(this._client);
 
-  final ApiClient _client;
+  final AuthApiClient _client;
 
   static const _path = '/api/auth/token';
 
