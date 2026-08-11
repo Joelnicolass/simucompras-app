@@ -2,10 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/meli_colors.dart';
 import '../../../../shared/components/app_loader.dart';
 import '../../../../shared/components/error_retry.dart';
 import '../../../auth/presentation/providers/session_access_token_provider.dart';
-import '../components/home_placeholder_section.dart';
+import '../components/home_bottom_nav.dart';
+import '../components/home_brand_banners_section.dart';
+import '../components/home_categories_section.dart';
+import '../components/home_footer.dart';
+import '../components/home_header.dart';
+import '../components/home_inspired_grid_section.dart';
+import '../components/home_inspired_list_section.dart';
+import '../components/home_official_stores_section.dart';
+import '../components/home_payment_cta_section.dart';
+import '../components/home_promo_banner.dart';
+import '../components/home_recently_viewed_section.dart';
+import '../components/home_subscription_banner.dart';
 
 class HomeView extends ConsumerWidget {
   const HomeView({super.key});
@@ -15,16 +27,7 @@ class HomeView extends ConsumerWidget {
     final session = ref.watch(sessionAccessTokenProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SimuCompras'),
-        actions: [
-          IconButton(
-            tooltip: 'Debug token',
-            onPressed: () => context.push('/debug/token'),
-            icon: const Icon(Icons.bug_report_outlined),
-          ),
-        ],
-      ),
+      backgroundColor: MeliColors.background,
       body: session.when(
         data: (_) => const _HomeBody(),
         loading: () => const AppLoader(message: 'Preparando sesión…'),
@@ -32,6 +35,10 @@ class HomeView extends ConsumerWidget {
           message: error.toString(),
           onRetry: () => ref.invalidate(sessionAccessTokenProvider),
         ),
+      ),
+      bottomNavigationBar: session.maybeWhen(
+        data: (_) => const HomeBottomNav(),
+        orElse: () => null,
       ),
     );
   }
@@ -43,30 +50,30 @@ class _HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.zero,
       children: [
-        Text(
-          'Simulá la compra. Calmás el impulso.',
-          style: Theme.of(context).textTheme.titleMedium,
+        HomeHeader(
+          onLogoLongPress: () => context.push('/debug/token'),
         ),
-        const SizedBox(height: 24),
-        const HomePlaceholderSection(
-          title: 'Buscar',
-          subtitle: 'Próximamente: búsqueda de productos en MercadoLibre.',
-          icon: Icons.search,
-        ),
+        const HomePromoBanner(),
+        const SizedBox(height: 8),
+        const HomeRecentlyViewedSection(),
+        const SizedBox(height: 8),
+        const HomeInspiredListSection(),
+        const SizedBox(height: 8),
+        const HomeInspiredGridSection(),
+        const SizedBox(height: 4),
+        const HomeSubscriptionBanner(),
+        const HomeBrandBannersSection(),
+        const SizedBox(height: 8),
+        const HomeOfficialStoresSection(),
+        const SizedBox(height: 8),
+        const HomeCategoriesSection(),
+        const SizedBox(height: 8),
+        const HomePaymentCtaSection(),
+        const SizedBox(height: 8),
+        const HomeFooter(),
         const SizedBox(height: 16),
-        const HomePlaceholderSection(
-          title: 'Destacados',
-          subtitle: 'Próximamente: catálogo simulado con tiempo de espera.',
-          icon: Icons.local_offer_outlined,
-        ),
-        const SizedBox(height: 16),
-        const HomePlaceholderSection(
-          title: 'Carrito',
-          subtitle: 'Próximamente: flujo de checkout sin cobro real.',
-          icon: Icons.shopping_cart_outlined,
-        ),
       ],
     );
   }
