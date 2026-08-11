@@ -48,6 +48,9 @@ dependencies:
   # Inyección de dependencias
   get_it: ^9.2.1
 
+  # Persistencia local (sesión de token)
+  shared_preferences: ^2.5.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -14,7 +14,15 @@ class AccessToken {
   final DateTime expiresAt;
   final bool cached;
 
-  bool get isExpired => DateTime.now().isAfter(expiresAt);
+  /// Margen antes del vencimiento real para renovar con anticipación.
+  static const validitySkew = Duration(seconds: 60);
+
+  bool get isExpired =>
+      DateTime.now().toUtc().isAfter(expiresAt.toUtc());
+
+  bool get isValid =>
+      value.isNotEmpty &&
+      DateTime.now().toUtc().isBefore(expiresAt.toUtc().subtract(validitySkew));
 
   /// Authorization header listo para llamadas a ML.
   String get authorizationHeader => '$tokenType $value';

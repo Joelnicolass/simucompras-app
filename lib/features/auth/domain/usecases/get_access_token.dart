@@ -2,6 +2,7 @@ import '../entities/access_token.dart';
 import '../errors/auth_failure.dart';
 import '../repositories/auth_repository.dart';
 
+/// Obtiene un token válido (cache local mientras no venza, o red).
 class GetAccessToken {
   const GetAccessToken(this._repository);
 
