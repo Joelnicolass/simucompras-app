@@ -12,8 +12,8 @@ import 'home_section_header.dart';
 class HomeFeaturedProductsSection extends ConsumerWidget {
   const HomeFeaturedProductsSection({
     super.key,
-    this.title = 'Inspirado en lo último que viste',
-    this.query = 'smart tv',
+    this.title = '',
+    this.query = '',
   });
 
   final String title;
@@ -21,7 +21,9 @@ class HomeFeaturedProductsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(featuredProductsProvider(query: query, limit: 6));
+    final products = ref.watch(
+      featuredProductsProvider(query: query, limit: 6),
+    );
 
     return ColoredBox(
       color: MeliColors.background,
@@ -50,21 +52,22 @@ class HomeFeaturedProductsSection extends ConsumerWidget {
                   builder: (context, constraints) {
                     const crossAxisCount = 2;
                     const spacing = 8.0;
-                    final itemWidth = (constraints.maxWidth -
+                    final itemWidth =
+                        (constraints.maxWidth -
                             spacing * (crossAxisCount - 1)) /
                         crossAxisCount;
                     return GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: list.length,
-                      gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
                         mainAxisSpacing: spacing,
                         crossAxisSpacing: spacing,
                         // Alto exacto de la card: imagen cuadrada + info.
-                        mainAxisExtent:
-                            ProductCardLayout.cardHeightFor(itemWidth),
+                        mainAxisExtent: ProductCardLayout.cardHeightFor(
+                          itemWidth,
+                        ),
                       ),
                       itemBuilder: (context, index) {
                         return _ProductGridItem(product: list[index]);
@@ -140,7 +143,8 @@ class _ProductGridItemState extends State<_ProductGridItem> {
     return ProductCard(
       title: product.title,
       priceText: priceText,
-      imageUrl: product.thumbnailUrl ??
+      imageUrl:
+          product.thumbnailUrl ??
           (product.pictureUrls.isNotEmpty ? product.pictureUrls.first : null),
       discountLabel: discount,
       shippingLabel: shipping,

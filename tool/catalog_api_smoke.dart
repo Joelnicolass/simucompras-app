@@ -6,7 +6,6 @@ import 'package:simucompras/core/config/app_config.dart';
 import 'package:simucompras/core/network/api_clients.dart';
 import 'package:simucompras/features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'package:simucompras/features/catalog/data/datasources/catalog_remote_datasource_impl.dart';
-import 'package:simucompras/features/catalog/domain/entities/catalog_product.dart';
 
 /// Smoke de red real (sin flutter_test, que intercepta HttpClient).
 ///
@@ -35,7 +34,9 @@ Future<void> main() async {
       authorizationHeader: header,
       siteId: AppConfig.mercadoLibreSiteId,
     );
-    stdout.writeln('✓ root categories: ${roots.length} (ej: ${roots.first.name})');
+    stdout.writeln(
+      '✓ root categories: ${roots.length} (ej: ${roots.first.name})',
+    );
 
     final category = await catalogRemote.getCategoryById(
       authorizationHeader: header,
@@ -89,7 +90,7 @@ Future<void> main() async {
     }
 
     // Producto histórico con ofertas verificadas en el setup.
-    final knownWithOffers = 'MLA72057588';
+    const knownWithOffers = 'MLA72057588';
     final knownOffers = await catalogRemote.getProductOffers(
       authorizationHeader: header,
       productId: knownWithOffers,
