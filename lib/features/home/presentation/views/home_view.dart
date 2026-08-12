@@ -50,14 +50,19 @@ class _HomeBody extends ConsumerWidget {
 
   Future<void> _onRefresh(WidgetRef ref) async {
     ref.read(catalogBrowseSeedProvider.notifier).reshuffle();
+    final seed = ref.read(catalogBrowseSeedProvider);
+    final (first, second) = HomeFeedQueries.pairFor(seed);
     await Future.wait([
-      for (final query in HomeFeedQueries.all)
-        ref.read(featuredProductsProvider(query: query, limit: 6).future),
+      ref.read(featuredProductsProvider(query: first, limit: 6).future),
+      ref.read(featuredProductsProvider(query: second, limit: 6).future),
     ]);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final seed = ref.watch(catalogBrowseSeedProvider);
+    final (firstQuery, secondQuery) = HomeFeedQueries.pairFor(seed);
+
     return RefreshIndicator(
       color: MeliColors.action,
       backgroundColor: MeliColors.surface,
@@ -66,20 +71,19 @@ class _HomeBody extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
-          HomeHeader(
-            onLogoLongPress: () => context.push('/debug/token'),
-          ),
+          HomeHeader(onLogoLongPress: () => context.push('/debug/token')),
           const HomePromoBanner(),
           const SizedBox(height: 8),
           const HomeCategoriesCarouselSection(),
           const SizedBox(height: 8),
-          const HomeFeaturedProductsSection(
-            query: HomeFeedQueries.inspired,
+          HomeFeaturedProductsSection(
+            title: firstQuery.capitalizeFirst,
+            query: firstQuery,
           ),
           const SizedBox(height: 8),
-          const HomeFeaturedProductsSection(
-            title: 'Relacionado con tus búsquedas',
-            query: HomeFeedQueries.related,
+          HomeFeaturedProductsSection(
+            title: secondQuery.capitalizeFirst,
+            query: secondQuery,
           ),
           const SizedBox(height: 4),
           const HomeSubscriptionBanner(),
@@ -95,4 +99,8 @@ class _HomeBody extends ConsumerWidget {
       ),
     );
   }
+}
+
+extension on String {
+  String get capitalizeFirst => substring(0, 1).toUpperCase() + substring(1);
 }
