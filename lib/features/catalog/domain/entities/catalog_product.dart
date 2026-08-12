@@ -1,67 +1,55 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'catalog_product.freezed.dart';
+
 /// Producto de catálogo MeLi (no es un ítem/publicación marketplace).
-class CatalogProduct {
-  const CatalogProduct({
-    required this.id,
-    required this.title,
-    required this.domainId,
-    required this.status,
-    this.thumbnailUrl,
-    this.pictureUrls = const [],
-    this.shortDescription,
-    this.attributes = const [],
-    this.bestOffer,
-  });
+@freezed
+abstract class CatalogProduct with _$CatalogProduct {
+  const CatalogProduct._();
 
-  final String id;
-  final String title;
-  final String domainId;
-  final String status;
-  final String? thumbnailUrl;
-  final List<String> pictureUrls;
-  final String? shortDescription;
-  final List<ProductAttribute> attributes;
+  const factory CatalogProduct({
+    required String id,
+    required String title,
+    required String domainId,
+    required String status,
+    String? thumbnailUrl,
+    @Default([]) List<String> pictureUrls,
+    String? shortDescription,
+    @Default([]) List<ProductAttribute> attributes,
 
-  /// Oferta asociada si se enriqueció o se pidió detalle con ofertas.
-  final ProductOffer? bestOffer;
+    /// Oferta asociada si se enriqueció o se pidió detalle con ofertas.
+    ProductOffer? bestOffer,
+  }) = _CatalogProduct;
 
   double? get price => bestOffer?.price;
   String? get currencyId => bestOffer?.currencyId;
   bool get freeShipping => bestOffer?.freeShipping ?? false;
 }
 
-class ProductAttribute {
-  const ProductAttribute({
-    required this.id,
-    required this.name,
-    this.valueName,
-  });
-
-  final String id;
-  final String name;
-  final String? valueName;
+@freezed
+abstract class ProductAttribute with _$ProductAttribute {
+  const factory ProductAttribute({
+    required String id,
+    required String name,
+    String? valueName,
+  }) = _ProductAttribute;
 }
 
 /// Publicación/oferta del marketplace ligada a un producto de catálogo.
-class ProductOffer {
-  const ProductOffer({
-    required this.itemId,
-    required this.price,
-    required this.currencyId,
-    required this.condition,
-    this.originalPrice,
-    this.categoryId,
-    this.freeShipping = false,
-    this.sellerId,
-  });
+@freezed
+abstract class ProductOffer with _$ProductOffer {
+  const ProductOffer._();
 
-  final String itemId;
-  final double price;
-  final String currencyId;
-  final String condition;
-  final double? originalPrice;
-  final String? categoryId;
-  final bool freeShipping;
-  final int? sellerId;
+  const factory ProductOffer({
+    required String itemId,
+    required double price,
+    required String currencyId,
+    required String condition,
+    double? originalPrice,
+    String? categoryId,
+    @Default(false) bool freeShipping,
+    int? sellerId,
+  }) = _ProductOffer;
 
   double? get discountPercent {
     final original = originalPrice;
@@ -70,40 +58,29 @@ class ProductOffer {
   }
 }
 
-class ProductSearchPage {
-  const ProductSearchPage({
-    required this.query,
-    required this.results,
-    required this.total,
-    required this.limit,
-    required this.offset,
-  });
-
-  final String query;
-  final List<CatalogProduct> results;
-  final int total;
-  final int limit;
-  final int offset;
+@freezed
+abstract class ProductSearchPage with _$ProductSearchPage {
+  const factory ProductSearchPage({
+    required String query,
+    required List<CatalogProduct> results,
+    required int total,
+    required int limit,
+    required int offset,
+  }) = _ProductSearchPage;
 }
 
-class ProductSearchParams {
-  const ProductSearchParams({
-    this.query,
-    this.categoryId,
-    this.limit = 20,
-    this.offset = 0,
-    this.includeOffers = false,
-  });
+@freezed
+abstract class ProductSearchParams with _$ProductSearchParams {
+  const factory ProductSearchParams({
+    /// Texto libre a buscar.
+    String? query,
 
-  /// Texto libre a buscar.
-  final String? query;
+    /// Si se informa, se resuelve el nombre de la categoría y se suma a la query.
+    String? categoryId,
+    @Default(20) int limit,
+    @Default(0) int offset,
 
-  /// Si se informa, se resuelve el nombre de la categoría y se suma a la query.
-  final String? categoryId;
-
-  final int limit;
-  final int offset;
-
-  /// Cuando es true, consulta ofertas por producto (más lento, tiene precios).
-  final bool includeOffers;
+    /// Cuando es true, consulta ofertas por producto (más lento, tiene precios).
+    @Default(false) bool includeOffers,
+  }) = _ProductSearchParams;
 }

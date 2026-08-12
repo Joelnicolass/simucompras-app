@@ -1,25 +1,24 @@
-class AccessTokenModel {
-  const AccessTokenModel({
-    required this.accessToken,
-    required this.tokenType,
-    required this.expiresIn,
-    required this.expiresAt,
-    required this.cached,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  factory AccessTokenModel.fromJson(Map<String, dynamic> json) {
-    return AccessTokenModel(
-      accessToken: json['access_token'] as String,
-      tokenType: json['token_type'] as String? ?? 'Bearer',
-      expiresIn: (json['expires_in'] as num).toInt(),
-      expiresAt: DateTime.parse(json['expires_at'] as String),
-      cached: json['cached'] as bool? ?? false,
-    );
-  }
+part 'access_token_model.freezed.dart';
+part 'access_token_model.g.dart';
 
-  final String accessToken;
-  final String tokenType;
-  final int expiresIn;
-  final DateTime expiresAt;
-  final bool cached;
+/// DTO del token emitido por el server de SimuCompras.
+///
+/// `toJson` se usa para persistir la sesión en storage local.
+@freezed
+abstract class AccessTokenModel with _$AccessTokenModel {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory AccessTokenModel({
+    required String accessToken,
+    @Default('Bearer') String tokenType,
+    required int expiresIn,
+    @JsonKey(toJson: _dateTimeToUtcIso) required DateTime expiresAt,
+    @Default(false) bool cached,
+  }) = _AccessTokenModel;
+
+  factory AccessTokenModel.fromJson(Map<String, dynamic> json) =>
+      _$AccessTokenModelFromJson(json);
 }
+
+String _dateTimeToUtcIso(DateTime value) => value.toUtc().toIso8601String();

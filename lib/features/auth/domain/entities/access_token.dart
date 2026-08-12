@@ -1,24 +1,24 @@
-/// Token de acceso de MercadoLibre obtenido vía el server de SimuCompras.
-class AccessToken {
-  const AccessToken({
-    required this.value,
-    required this.tokenType,
-    required this.expiresIn,
-    required this.expiresAt,
-    required this.cached,
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String value;
-  final String tokenType;
-  final int expiresIn;
-  final DateTime expiresAt;
-  final bool cached;
+part 'access_token.freezed.dart';
+
+/// Token de acceso de MercadoLibre obtenido vía el server de SimuCompras.
+@freezed
+abstract class AccessToken with _$AccessToken {
+  const AccessToken._();
+
+  const factory AccessToken({
+    required String value,
+    required String tokenType,
+    required int expiresIn,
+    required DateTime expiresAt,
+    required bool cached,
+  }) = _AccessToken;
 
   /// Margen antes del vencimiento real para renovar con anticipación.
   static const validitySkew = Duration(seconds: 60);
 
-  bool get isExpired =>
-      DateTime.now().toUtc().isAfter(expiresAt.toUtc());
+  bool get isExpired => DateTime.now().toUtc().isAfter(expiresAt.toUtc());
 
   bool get isValid =>
       value.isNotEmpty &&

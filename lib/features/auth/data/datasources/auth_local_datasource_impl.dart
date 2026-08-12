@@ -30,14 +30,7 @@ class AuthLocalDatasourceImpl implements AuthLocalDatasource {
 
   @override
   Future<void> saveAccessToken(AccessToken token) async {
-    final model = token.toModel();
-    final payload = jsonEncode({
-      'access_token': model.accessToken,
-      'token_type': model.tokenType,
-      'expires_in': model.expiresIn,
-      'expires_at': model.expiresAt.toUtc().toIso8601String(),
-      'cached': model.cached,
-    });
+    final payload = jsonEncode(token.toModel().toJson());
     await _prefs.setString(_storageKey, payload);
   }
 

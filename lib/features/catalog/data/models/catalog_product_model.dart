@@ -1,133 +1,127 @@
-class CatalogProductModel {
-  const CatalogProductModel({
-    required this.id,
-    required this.title,
-    required this.domainId,
-    required this.status,
-    this.thumbnailUrl,
-    this.pictureUrls = const [],
-    this.shortDescription,
-    this.attributes = const [],
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  factory CatalogProductModel.fromJson(Map<String, dynamic> json) {
-    final pictures = _pictureUrls(json['pictures']);
-    return CatalogProductModel(
-      id: json['id'] as String? ?? json['catalog_product_id'] as String? ?? '',
-      title: json['name'] as String? ?? json['title'] as String? ?? '',
-      domainId: json['domain_id'] as String? ?? '',
-      status: json['status'] as String? ?? 'unknown',
-      thumbnailUrl: pictures.isNotEmpty ? pictures.first : null,
-      pictureUrls: pictures,
-      shortDescription: _shortDescription(json['short_description']),
-      attributes: _attributes(json['attributes']),
-    );
-  }
+part 'catalog_product_model.freezed.dart';
+part 'catalog_product_model.g.dart';
 
-  final String id;
-  final String title;
-  final String domainId;
-  final String status;
-  final String? thumbnailUrl;
-  final List<String> pictureUrls;
-  final String? shortDescription;
-  final List<ProductAttributeModel> attributes;
+/// DTO de producto de catálogo (`/products/*`).
+///
+/// La API varía las claves según el endpoint (search vs detalle); esas
+/// rarezas se resuelven declarativamente con `readValue`/`fromJson`.
+@freezed
+abstract class CatalogProductModel with _$CatalogProductModel {
+  const CatalogProductModel._();
 
-  static List<String> _pictureUrls(Object? raw) {
-    if (raw is! List) return const [];
-    return raw
-        .whereType<Map>()
-        .map((p) => p['url'] as String? ?? p['secure_url'] as String?)
-        .whereType<String>()
-        .where((url) => url.isNotEmpty)
-        .toList(growable: false);
-  }
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory CatalogProductModel({
+    @JsonKey(readValue: _readId) @Default('') String id,
+    @JsonKey(readValue: _readTitle) @Default('') String title,
+    @Default('') String domainId,
+    @Default('unknown') String status,
+    @JsonKey(name: 'pictures', fromJson: _pictureUrlsFromJson)
+    @Default([])
+    List<String> pictureUrls,
+    @JsonKey(fromJson: _shortDescriptionFromJson) String? shortDescription,
+    @JsonKey(fromJson: _attributesFromJson)
+    @Default([])
+    List<ProductAttributeModel> attributes,
+  }) = _CatalogProductModel;
 
-  static String? _shortDescription(Object? raw) {
-    if (raw is Map) {
-      final content = raw['content'] as String?;
-      if (content != null && content.trim().isNotEmpty) return content.trim();
-    }
-    if (raw is String && raw.trim().isNotEmpty) return raw.trim();
-    return null;
-  }
+  factory CatalogProductModel.fromJson(Map<String, dynamic> json) =>
+      _$CatalogProductModelFromJson(json);
 
-  static List<ProductAttributeModel> _attributes(Object? raw) {
-    if (raw is! List) return const [];
-    return raw
-        .whereType<Map>()
-        .map(
-          (a) => ProductAttributeModel(
-            id: a['id'] as String? ?? '',
-            name: a['name'] as String? ?? '',
-            valueName: a['value_name'] as String?,
-          ),
-        )
-        .where((a) => a.id.isNotEmpty)
-        .toList(growable: false);
-  }
+  String? get thumbnailUrl => pictureUrls.isNotEmpty ? pictureUrls.first : null;
 }
 
-class ProductAttributeModel {
-  const ProductAttributeModel({
-    required this.id,
-    required this.name,
-    this.valueName,
-  });
+/// El search devuelve `id`; otros payloads solo traen `catalog_product_id`.
+Object? _readId(Map<dynamic, dynamic> json, String key) =>
+    json['id'] ?? json['catalog_product_id'];
 
-  final String id;
-  final String name;
-  final String? valueName;
+/// Catálogo usa `name`; marketplace usa `title`.
+Object? _readTitle(Map<dynamic, dynamic> json, String key) =>
+    json['name'] ?? json['title'];
+
+List<String> _pictureUrlsFromJson(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((p) => p['url'] as String? ?? p['secure_url'] as String?)
+      .whereType<String>()
+      .where((url) => url.isNotEmpty)
+      .toList(growable: false);
 }
 
-class ProductOfferModel {
-  const ProductOfferModel({
-    required this.itemId,
-    required this.price,
-    required this.currencyId,
-    required this.condition,
-    this.originalPrice,
-    this.categoryId,
-    this.freeShipping = false,
-    this.sellerId,
-  });
-
-  factory ProductOfferModel.fromJson(Map<String, dynamic> json) {
-    final shipping = json['shipping'];
-    final free = shipping is Map ? shipping['free_shipping'] == true : false;
-
-    return ProductOfferModel(
-      itemId: json['item_id'] as String? ?? '',
-      price: (json['price'] as num?)?.toDouble() ?? 0,
-      currencyId: json['currency_id'] as String? ?? '',
-      condition: json['condition'] as String? ?? 'not_specified',
-      originalPrice: (json['original_price'] as num?)?.toDouble(),
-      categoryId: json['category_id'] as String?,
-      freeShipping: free,
-      sellerId: json['seller_id'] as int?,
-    );
+/// Puede venir como string plano o como objeto `{content: ...}`.
+String? _shortDescriptionFromJson(Object? raw) {
+  if (raw is Map) {
+    final content = raw['content'] as String?;
+    if (content != null && content.trim().isNotEmpty) return content.trim();
   }
-
-  final String itemId;
-  final double price;
-  final String currencyId;
-  final String condition;
-  final double? originalPrice;
-  final String? categoryId;
-  final bool freeShipping;
-  final int? sellerId;
+  if (raw is String && raw.trim().isNotEmpty) return raw.trim();
+  return null;
 }
 
-class ProductSearchPageModel {
-  const ProductSearchPageModel({
-    required this.query,
-    required this.results,
-    required this.total,
-    required this.limit,
-    required this.offset,
-  });
+List<ProductAttributeModel> _attributesFromJson(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((a) => ProductAttributeModel.fromJson(Map<String, dynamic>.from(a)))
+      .where((a) => a.id.isNotEmpty)
+      .toList(growable: false);
+}
 
-  factory ProductSearchPageModel.fromJson(
+@freezed
+abstract class ProductAttributeModel with _$ProductAttributeModel {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory ProductAttributeModel({
+    @Default('') String id,
+    @Default('') String name,
+    String? valueName,
+  }) = _ProductAttributeModel;
+
+  factory ProductAttributeModel.fromJson(Map<String, dynamic> json) =>
+      _$ProductAttributeModelFromJson(json);
+}
+
+/// DTO de oferta (`/products/{id}/items`).
+@freezed
+abstract class ProductOfferModel with _$ProductOfferModel {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory ProductOfferModel({
+    @Default('') String itemId,
+    @Default(0) double price,
+    @Default('') String currencyId,
+    @Default('not_specified') String condition,
+    double? originalPrice,
+    String? categoryId,
+    @JsonKey(readValue: _readFreeShipping) @Default(false) bool freeShipping,
+    int? sellerId,
+  }) = _ProductOfferModel;
+
+  factory ProductOfferModel.fromJson(Map<String, dynamic> json) =>
+      _$ProductOfferModelFromJson(json);
+}
+
+/// El flag viene anidado en `shipping.free_shipping`.
+Object? _readFreeShipping(Map<dynamic, dynamic> json, String key) {
+  final shipping = json['shipping'];
+  return shipping is Map ? shipping['free_shipping'] == true : false;
+}
+
+/// Página de resultados de `/products/search`.
+///
+/// No usa `fromJson` generado: necesita `fallbackQuery` (la API a veces no
+/// ecoa `keywords`) y desanida `paging` a mano.
+@freezed
+abstract class ProductSearchPageModel with _$ProductSearchPageModel {
+  const factory ProductSearchPageModel({
+    required String query,
+    required List<CatalogProductModel> results,
+    required int total,
+    required int limit,
+    required int offset,
+  }) = _ProductSearchPageModel;
+
+  factory ProductSearchPageModel.fromSearchJson(
     Map<String, dynamic> json, {
     required String fallbackQuery,
   }) {
@@ -141,15 +135,13 @@ class ProductSearchPageModel {
     return ProductSearchPageModel(
       query: json['keywords'] as String? ?? fallbackQuery,
       results: results,
-      total: paging is Map ? (paging['total'] as num?)?.toInt() ?? results.length : results.length,
-      limit: paging is Map ? (paging['limit'] as num?)?.toInt() ?? results.length : results.length,
+      total: paging is Map
+          ? (paging['total'] as num?)?.toInt() ?? results.length
+          : results.length,
+      limit: paging is Map
+          ? (paging['limit'] as num?)?.toInt() ?? results.length
+          : results.length,
       offset: paging is Map ? (paging['offset'] as num?)?.toInt() ?? 0 : 0,
     );
   }
-
-  final String query;
-  final List<CatalogProductModel> results;
-  final int total;
-  final int limit;
-  final int offset;
 }

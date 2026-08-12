@@ -1,53 +1,56 @@
-class CategoryModel {
-  const CategoryModel({
-    required this.id,
-    required this.name,
-    this.pictureUrl,
-    this.totalItemsInThisCategory,
-    this.pathFromRoot = const [],
-    this.children = const [],
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  factory CategoryModel.fromJson(Map<String, dynamic> json) {
-    final path = (json['path_from_root'] as List? ?? const [])
-        .whereType<Map>()
-        .map(
-          (n) => CategoryPathNodeModel(
-            id: n['id'] as String? ?? '',
-            name: n['name'] as String? ?? '',
-          ),
-        )
-        .where((n) => n.id.isNotEmpty)
-        .toList(growable: false);
+part 'category_model.freezed.dart';
+part 'category_model.g.dart';
 
-    final children = (json['children_categories'] as List? ?? const [])
-        .whereType<Map>()
-        .map((c) => CategoryModel.fromJson(Map<String, dynamic>.from(c)))
-        .where((c) => c.id.isNotEmpty)
-        .toList(growable: false);
+/// DTO de categoría (`/sites/{site}/categories` y `/categories/{id}`).
+@freezed
+abstract class CategoryModel with _$CategoryModel {
+  @JsonSerializable(fieldRename: FieldRename.snake)
+  const factory CategoryModel({
+    @Default('') String id,
+    @Default('') String name,
+    @JsonKey(name: 'picture') String? pictureUrl,
+    int? totalItemsInThisCategory,
+    @JsonKey(fromJson: _pathFromJson)
+    @Default([])
+    List<CategoryPathNodeModel> pathFromRoot,
+    @JsonKey(name: 'children_categories', fromJson: _childrenFromJson)
+    @Default([])
+    List<CategoryModel> children,
+  }) = _CategoryModel;
 
-    return CategoryModel(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      pictureUrl: json['picture'] as String?,
-      totalItemsInThisCategory:
-          (json['total_items_in_this_category'] as num?)?.toInt(),
-      pathFromRoot: path,
-      children: children,
-    );
-  }
-
-  final String id;
-  final String name;
-  final String? pictureUrl;
-  final int? totalItemsInThisCategory;
-  final List<CategoryPathNodeModel> pathFromRoot;
-  final List<CategoryModel> children;
+  factory CategoryModel.fromJson(Map<String, dynamic> json) =>
+      _$CategoryModelFromJson(json);
 }
 
-class CategoryPathNodeModel {
-  const CategoryPathNodeModel({required this.id, required this.name});
+List<CategoryPathNodeModel> _pathFromJson(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map(
+        (n) => CategoryPathNodeModel.fromJson(Map<String, dynamic>.from(n)),
+      )
+      .where((n) => n.id.isNotEmpty)
+      .toList(growable: false);
+}
 
-  final String id;
-  final String name;
+List<CategoryModel> _childrenFromJson(Object? raw) {
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((c) => CategoryModel.fromJson(Map<String, dynamic>.from(c)))
+      .where((c) => c.id.isNotEmpty)
+      .toList(growable: false);
+}
+
+@freezed
+abstract class CategoryPathNodeModel with _$CategoryPathNodeModel {
+  const factory CategoryPathNodeModel({
+    @Default('') String id,
+    @Default('') String name,
+  }) = _CategoryPathNodeModel;
+
+  factory CategoryPathNodeModel.fromJson(Map<String, dynamic> json) =>
+      _$CategoryPathNodeModelFromJson(json);
 }
