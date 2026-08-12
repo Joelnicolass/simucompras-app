@@ -38,7 +38,7 @@ class CatalogRemoteDatasourceImpl implements CatalogRemoteDatasource {
       },
     );
 
-    final page = ProductSearchPageModel.fromJson(
+    final page = ProductSearchPageModel.fromSearchJson(
       json,
       fallbackQuery: keywords,
     );

@@ -111,19 +111,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
           continue; // duplicado exacto o mismo nombre de producto
         }
 
-        collected.add(
-          CatalogProduct(
-            id: product.id,
-            title: product.title,
-            domainId: product.domainId,
-            status: product.status,
-            thumbnailUrl: product.thumbnailUrl,
-            pictureUrls: product.pictureUrls,
-            shortDescription: product.shortDescription,
-            attributes: product.attributes,
-            bestOffer: best,
-          ),
-        );
+        collected.add(product.copyWith(bestOffer: best));
         if (collected.length >= limit) break;
       }
 
@@ -195,17 +183,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
 
       final offers = await _safeOffers(header, productId);
       final best = offers.isEmpty ? null : offers.first;
-      return CatalogProduct(
-        id: product.id,
-        title: product.title,
-        domainId: product.domainId,
-        status: product.status,
-        thumbnailUrl: product.thumbnailUrl,
-        pictureUrls: product.pictureUrls,
-        shortDescription: product.shortDescription,
-        attributes: product.attributes,
-        bestOffer: best,
-      );
+      return product.copyWith(bestOffer: best);
     } on CatalogFailure {
       rethrow;
     } on HttpException catch (error) {

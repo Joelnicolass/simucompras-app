@@ -1,26 +1,27 @@
-class Category {
-  const Category({
-    required this.id,
-    required this.name,
-    this.pictureUrl,
-    this.totalItemsInThisCategory,
-    this.pathFromRoot = const [],
-    this.children = const [],
-  });
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  final String id;
-  final String name;
-  final String? pictureUrl;
-  final int? totalItemsInThisCategory;
-  final List<CategoryPathNode> pathFromRoot;
-  final List<Category> children;
+part 'category.freezed.dart';
+
+@freezed
+abstract class Category with _$Category {
+  const Category._();
+
+  const factory Category({
+    required String id,
+    required String name,
+    String? pictureUrl,
+    int? totalItemsInThisCategory,
+    @Default([]) List<CategoryPathNode> pathFromRoot,
+    @Default([]) List<Category> children,
+  }) = _Category;
 
   bool get isLeaf => children.isEmpty;
 }
 
-class CategoryPathNode {
-  const CategoryPathNode({required this.id, required this.name});
-
-  final String id;
-  final String name;
+@freezed
+abstract class CategoryPathNode with _$CategoryPathNode {
+  const factory CategoryPathNode({
+    required String id,
+    required String name,
+  }) = _CategoryPathNode;
 }
