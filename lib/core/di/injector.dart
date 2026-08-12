@@ -8,6 +8,15 @@ import '../../features/auth/domain/datasources/auth_local_datasource.dart';
 import '../../features/auth/domain/datasources/auth_remote_datasource.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/get_access_token.dart';
+import '../../features/catalog/data/datasources/catalog_remote_datasource_impl.dart';
+import '../../features/catalog/data/repositories/catalog_repository_impl.dart';
+import '../../features/catalog/domain/datasources/catalog_remote_datasource.dart';
+import '../../features/catalog/domain/repositories/catalog_repository.dart';
+import '../../features/catalog/domain/usecases/get_category_by_id.dart';
+import '../../features/catalog/domain/usecases/get_product_by_id.dart';
+import '../../features/catalog/domain/usecases/get_product_offers.dart';
+import '../../features/catalog/domain/usecases/get_root_categories.dart';
+import '../../features/catalog/domain/usecases/search_products.dart';
 import '../config/app_config.dart';
 import '../network/api_clients.dart';
 
@@ -30,6 +39,7 @@ Future<void> setupInjector() async {
     );
 
   _setupAuth();
+  _setupCatalog();
 }
 
 void _setupAuth() {
@@ -44,4 +54,19 @@ void _setupAuth() {
       () => AuthRepositoryImpl(getIt(), getIt()),
     )
     ..registerFactory(() => GetAccessToken(getIt()));
+}
+
+void _setupCatalog() {
+  getIt
+    ..registerLazySingleton<CatalogRemoteDatasource>(
+      () => CatalogRemoteDatasourceImpl(getIt()),
+    )
+    ..registerLazySingleton<CatalogRepository>(
+      () => CatalogRepositoryImpl(getIt(), getIt()),
+    )
+    ..registerFactory(() => SearchProducts(getIt()))
+    ..registerFactory(() => GetProductById(getIt()))
+    ..registerFactory(() => GetProductOffers(getIt()))
+    ..registerFactory(() => GetRootCategories(getIt()))
+    ..registerFactory(() => GetCategoryById(getIt()));
 }
