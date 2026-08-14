@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../shared/components/app_hero.dart';
 import '../../../../shared/components/product_card.dart';
 import '../../../../shared/components/skeletons.dart';
+import '../../../../shared/game/game_pricing.dart';
 import '../../../../shared/utils/price_format.dart';
-import '../../../../shared/utils/reference_price.dart';
+import '../../../player/presentation/providers/favorites_provider.dart';
 import '../../domain/entities/catalog_product.dart';
+import '../navigation/product_route_args.dart';
 
 /// Grilla 2xN de [ProductCard] con alto exacto por fila (sin saltos).
 ///
-/// Compartida entre home, búsqueda y categoría. Stateless: el favorito
-/// dummy es estado efímero de cada ítem. En modo scrolleable soporta
+/// Compartida entre home, búsqueda y categoría. En modo scrolleable soporta
 /// scroll infinito con [onEndReached] y un footer skeleton.
 class ProductResultsGrid extends StatelessWidget {
   const ProductResultsGrid({
@@ -142,39 +146,36 @@ class ProductResultsGrid extends StatelessWidget {
   }
 }
 
-class ProductGridItem extends StatefulWidget {
+class ProductGridItem extends ConsumerWidget {
   const ProductGridItem({super.key, required this.product, this.onTap});
 
   final CatalogProduct product;
   final VoidCallback? onTap;
 
   @override
-  State<ProductGridItem> createState() => _ProductGridItemState();
-}
-
-/// Estado local mínimo solo para el favorito dummy (efímero de UI).
-class _ProductGridItemState extends State<ProductGridItem> {
-  bool _favorite = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final product = widget.product;
+  Widget build(BuildContext context, WidgetRef ref) {
     final offer = product.bestOffer;
-    // Sin oferta activa: precio simulado estable (app de simulación).
-    final price = offer?.price ?? ReferencePrice.stableFor(product.id);
-    final priceText = PriceFormat.ars(price);
-    final original = offer?.originalPrice;
-    final originalText = original != null && original > price
-        ? PriceFormat.ars(original)
+    final display = GamePricing.resolve(
+      productId: product.id,
+      offerPrice: offer?.price,
+      originalPrice: offer?.originalPrice,
+    );
+    final priceText = PriceFormat.ars(display.amount);
+    final originalText = display.originalAmount != null
+        ? PriceFormat.ars(display.originalAmount!)
         : null;
-    final discount = offer == null
-        ? null
-        : PriceFormat.discountPercent(offer.originalPrice, offer.price);
-    final installments = PriceFormat.installmentsArs(price);
+    final discount = PriceFormat.discountPercent(
+      display.originalAmount,
+      display.amount,
+    );
+    final installments = PriceFormat.installmentsArs(display.amount);
     final shipping = offer?.freeShipping == true ? 'Envío gratis' : null;
+    final isFavorite =
+        ref.watch(favoritesProvider).value?.contains(product.id) ?? false;
 
     return ProductCard(
       title: product.title,
+      heroTag: AppHeroTags.productImage(product.id),
       priceText: priceText,
       imageUrl:
           product.thumbnailUrl ??
@@ -183,17 +184,21 @@ class _ProductGridItemState extends State<ProductGridItem> {
       discountLabel: discount,
       installmentsText: installments,
       shippingLabel: shipping,
-      isFavorite: _favorite,
-      onFavoriteTap: () => setState(() => _favorite = !_favorite),
-      onTap: widget.onTap ??
-          () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(product.title),
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          },
+      isSuperOffer: display.isSuperOffer,
+      isFavorite: isFavorite,
+      onFavoriteTap: () =>
+          ref.read(favoritesProvider.notifier).toggle(product.id),
+      onTap: onTap ??
+          () => context.push(
+            '/product/${product.id}',
+            extra: ProductRouteArgs(
+              imageUrl: product.thumbnailUrl ??
+                  (product.pictureUrls.isNotEmpty
+                      ? product.pictureUrls.first
+                      : null),
+              title: product.title,
+            ),
+          ),
     );
   }
 }

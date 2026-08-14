@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/meli_colors.dart';
+import '../../../../shared/components/cart_icon_button.dart';
 import 'home_placeholder_box.dart';
 
 class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
@@ -85,11 +86,7 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: onCartTap,
-                  icon: const Icon(Icons.shopping_cart_outlined),
-                  color: MeliColors.textDark,
-                ),
+                CartIconButton(onPressed: onCartTap),
                 IconButton(
                   onPressed: onMenuTap,
                   icon: const Icon(Icons.menu),

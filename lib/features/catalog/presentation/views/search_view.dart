@@ -4,26 +4,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/meli_colors.dart';
 import '../../../../shared/components/error_retry.dart';
 import '../../../../shared/components/skeletons.dart';
+import '../../../player/presentation/providers/search_history_provider.dart';
 import '../components/product_results_grid.dart';
 import '../providers/search_results_provider.dart';
 
 /// Búsqueda de productos: barra editable + grilla de resultados.
-class SearchView extends StatefulWidget {
+class SearchView extends ConsumerStatefulWidget {
   const SearchView({super.key, this.initialQuery = ''});
 
   final String initialQuery;
 
   @override
-  State<SearchView> createState() => _SearchViewState();
+  ConsumerState<SearchView> createState() => _SearchViewState();
 }
 
-class _SearchViewState extends State<SearchView> {
+class _SearchViewState extends ConsumerState<SearchView> {
   late final TextEditingController _controller = TextEditingController(
     text: widget.initialQuery,
   );
 
   /// Query confirmada con "buscar"; dispara el provider.
   late String _submitted = widget.initialQuery.trim();
+
+  @override
+  void initState() {
+    super.initState();
+    if (_submitted.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(searchHistoryProvider.notifier).record(_submitted);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -35,6 +46,7 @@ class _SearchViewState extends State<SearchView> {
     final query = value.trim();
     if (query.isEmpty || query == _submitted) return;
     setState(() => _submitted = query);
+    ref.read(searchHistoryProvider.notifier).record(query);
   }
 
   @override

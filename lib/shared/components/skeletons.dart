@@ -158,3 +158,37 @@ class CategoryCarouselSkeleton extends StatelessWidget {
     );
   }
 }
+
+/// Skeleton del detalle de producto (debajo de la imagen heroine).
+class ProductDetailInfoSkeleton extends StatelessWidget {
+  const ProductDetailInfoSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SkeletonPulse(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SkeletonBox(height: 20, borderRadius: 4),
+            SizedBox(height: 8),
+            SkeletonBox(width: 220, height: 20, borderRadius: 4),
+            SizedBox(height: 16),
+            SkeletonBox(width: 100, height: 14, borderRadius: 4),
+            SizedBox(height: 8),
+            SkeletonBox(width: 140, height: 28, borderRadius: 4),
+            SizedBox(height: 8),
+            SkeletonBox(width: 160, height: 14, borderRadius: 4),
+            SizedBox(height: 24),
+            SkeletonBox(height: 12, borderRadius: 4),
+            SizedBox(height: 8),
+            SkeletonBox(height: 12, borderRadius: 4),
+            SizedBox(height: 8),
+            SkeletonBox(width: 180, height: 12, borderRadius: 4),
+          ],
+        ),
+      ),
+    );
+  }
+}

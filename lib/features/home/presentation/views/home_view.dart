@@ -3,22 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/meli_colors.dart';
+import '../../../../shared/components/app_animated_text.dart';
 import '../../../../shared/components/app_loader.dart';
+import '../../../../shared/components/app_pull_to_refresh.dart';
 import '../../../../shared/components/error_retry.dart';
 import '../../../auth/presentation/providers/session_access_token_provider.dart';
 import '../../../catalog/presentation/providers/catalog_browse_seed_provider.dart';
 import '../../../catalog/presentation/providers/featured_products_provider.dart';
-import '../components/home_bottom_nav.dart';
-import '../components/home_brand_banners_section.dart';
 import '../components/home_categories_carousel_section.dart';
 import '../components/home_featured_products_section.dart';
-import '../components/home_footer.dart';
 import '../components/home_header.dart';
-import '../components/home_official_stores_section.dart';
-import '../components/home_payment_cta_section.dart';
-import '../components/home_promo_banner.dart';
-import '../components/home_subscription_banner.dart';
-import '../home_feed_queries.dart';
+import '../providers/home_feed_topics_provider.dart';
 
 class HomeView extends ConsumerWidget {
   const HomeView({super.key});
@@ -37,10 +32,6 @@ class HomeView extends ConsumerWidget {
           onRetry: () => ref.invalidate(sessionAccessTokenProvider),
         ),
       ),
-      bottomNavigationBar: session.maybeWhen(
-        data: (_) => const HomeBottomNav(),
-        orElse: () => null,
-      ),
     );
   }
 }
@@ -50,8 +41,7 @@ class _HomeBody extends ConsumerWidget {
 
   Future<void> _onRefresh(WidgetRef ref) async {
     ref.read(catalogBrowseSeedProvider.notifier).reshuffle();
-    final seed = ref.read(catalogBrowseSeedProvider);
-    final (first, second) = HomeFeedQueries.pairFor(seed);
+    final (first, second) = ref.read(homeFeedTopicsProvider);
     await Future.wait([
       ref.read(featuredProductsProvider(query: first, limit: 6).future),
       ref.read(featuredProductsProvider(query: second, limit: 6).future),
@@ -60,12 +50,9 @@ class _HomeBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final seed = ref.watch(catalogBrowseSeedProvider);
-    final (firstQuery, secondQuery) = HomeFeedQueries.pairFor(seed);
+    final (firstQuery, secondQuery) = ref.watch(homeFeedTopicsProvider);
 
-    return RefreshIndicator(
-      color: MeliColors.action,
-      backgroundColor: MeliColors.surface,
+    return AppPullToRefresh(
       onRefresh: () => _onRefresh(ref),
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -73,9 +60,26 @@ class _HomeBody extends ConsumerWidget {
         children: [
           HomeHeader(
             onSearchTap: () => context.push('/search'),
+            onCartTap: () => context.push('/cart'),
             onLogoLongPress: () => context.push('/debug/token'),
           ),
-          const HomePromoBanner(),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: AppAnimatedText(
+              texts: [
+                'Encontrá tu próxima compra',
+                'Ofertas que no vas a creer',
+                'Simulá. Comprá. Ganá.',
+              ],
+              style: AppTextAnimationStyle.colorize,
+              textStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: MeliColors.textDark,
+                height: 1.3,
+              ),
+            ),
+          ),
           const SizedBox(height: 8),
           const HomeCategoriesCarouselSection(),
           const SizedBox(height: 8),
@@ -88,16 +92,7 @@ class _HomeBody extends ConsumerWidget {
             title: secondQuery.capitalizeFirst,
             query: secondQuery,
           ),
-          const SizedBox(height: 4),
-          const HomeSubscriptionBanner(),
-          const HomeBrandBannersSection(),
-          const SizedBox(height: 8),
-          const HomeOfficialStoresSection(),
-          const SizedBox(height: 8),
-          const HomePaymentCtaSection(),
-          const SizedBox(height: 8),
-          const HomeFooter(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -105,5 +100,8 @@ class _HomeBody extends ConsumerWidget {
 }
 
 extension on String {
-  String get capitalizeFirst => substring(0, 1).toUpperCase() + substring(1);
+  String get capitalizeFirst {
+    if (isEmpty) return this;
+    return substring(0, 1).toUpperCase() + substring(1);
+  }
 }
