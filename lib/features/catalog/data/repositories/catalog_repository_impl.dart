@@ -13,12 +13,6 @@ class CatalogRepositoryImpl implements CatalogRepository {
   final CatalogRemoteDatasource _remote;
   final AuthRepository _auth;
 
-  /// Tamaño de página contra /products/search al buscar con ofertas.
-  static const _offersBatchSize = 20;
-
-  /// Tope de páginas de catálogo a explorar por búsqueda con ofertas.
-  static const _offersMaxBatches = 4;
-
   Future<String> _authorizationHeader() async {
     final token = await _auth.getAccessToken();
     return token.authorizationHeader;
@@ -63,68 +57,51 @@ class CatalogRepositoryImpl implements CatalogRepository {
     }
   }
 
-  /// Pagina el catálogo acumulando solo productos con oferta hasta llenar
-  /// [limit]. Muchos productos de catálogo no tienen vendedores (sin buy
-  /// box), por eso una sola página suele quedar corta.
+  /// Una página de catálogo enriquecida con su mejor oferta (si existe).
+  ///
+  /// No oculta productos sin precio: la UI les pone un label. Ordena con
+  /// precio primero y deduplica dentro de la página (id o mismo título).
+  /// Offset 1:1 contra el catálogo, apto para paginación por scroll.
   Future<ProductSearchPage> _searchWithOffers({
     required String header,
     required String keywords,
     required int limit,
     required int offset,
   }) async {
-    final collected = <CatalogProduct>[];
+    final page = await _remote.searchProducts(
+      authorizationHeader: header,
+      siteId: AppConfig.mercadoLibreSiteId,
+      keywords: keywords,
+      limit: limit,
+      offset: offset,
+    );
+
+    if (page.results.isEmpty) return page;
+
+    final enriched = await Future.wait(
+      page.results.map((product) async {
+        final offers = await _safeOffers(header, product.id);
+        final best = offers.isEmpty ? null : offers.first;
+        return best == null ? product : product.copyWith(bestOffer: best);
+      }),
+    );
+
     final seenIds = <String>{};
     final seenTitles = <String>{};
-
-    var batchOffset = offset;
-    var total = 0;
-    var query = keywords;
-
-    for (var batch = 0; batch < _offersMaxBatches; batch++) {
-      final page = await _remote.searchProducts(
-        authorizationHeader: header,
-        siteId: AppConfig.mercadoLibreSiteId,
-        keywords: keywords,
-        limit: _offersBatchSize,
-        offset: batchOffset,
-      );
-      total = page.total;
-      query = page.query;
-
-      if (page.results.isEmpty) break;
-
-      final enriched = await Future.wait(
-        page.results.map((product) async {
-          final offers = await _safeOffers(header, product.id);
-          final best = offers.isEmpty ? null : offers.first;
-          return (product: product, best: best);
-        }),
-      );
-
-      for (final entry in enriched) {
-        final best = entry.best;
-        if (best == null) continue;
-
-        final product = entry.product;
-        final titleKey = product.title.trim().toLowerCase();
-        if (!seenIds.add(product.id) || !seenTitles.add(titleKey)) {
-          continue; // duplicado exacto o mismo nombre de producto
-        }
-
-        collected.add(product.copyWith(bestOffer: best));
-        if (collected.length >= limit) break;
+    final withPrice = <CatalogProduct>[];
+    final withoutPrice = <CatalogProduct>[];
+    for (final product in enriched) {
+      final titleKey = product.title.trim().toLowerCase();
+      if (!seenIds.add(product.id) || !seenTitles.add(titleKey)) {
+        continue; // duplicado exacto o mismo nombre de producto
       }
-
-      if (collected.length >= limit) break;
-
-      batchOffset += page.results.length;
-      if (batchOffset >= total) break;
+      (product.bestOffer != null ? withPrice : withoutPrice).add(product);
     }
 
     return ProductSearchPage(
-      query: query,
-      results: List.unmodifiable(collected.take(limit)),
-      total: total,
+      query: page.query,
+      results: List.unmodifiable([...withPrice, ...withoutPrice]),
+      total: page.total,
       limit: limit,
       offset: offset,
     );

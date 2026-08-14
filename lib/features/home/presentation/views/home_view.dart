@@ -71,7 +71,10 @@ class _HomeBody extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.zero,
         children: [
-          HomeHeader(onLogoLongPress: () => context.push('/debug/token')),
+          HomeHeader(
+            onSearchTap: () => context.push('/search'),
+            onLogoLongPress: () => context.push('/debug/token'),
+          ),
           const HomePromoBanner(),
           const SizedBox(height: 8),
           const HomeCategoriesCarouselSection(),

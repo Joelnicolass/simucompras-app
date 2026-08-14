@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/meli_colors.dart';
 import 'category_avatar_carousel.dart';
 import 'category_avatar_chip.dart';
+import 'skeletons.dart';
 
 /// Sección compartida: título + carrusel de categorías avatar.
 class CategoryCarouselSection extends StatelessWidget {
@@ -42,16 +43,8 @@ class CategoryCarouselSection extends StatelessWidget {
             ),
           ),
           if (isLoading)
-            SizedBox(
-              height: CategoryAvatarChipLayout.carouselHeight(),
-              child: const Center(
-                child: SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
+            // Skeleton con las mismas medidas del carrusel: sin saltos.
+            const CategoryCarouselSkeleton()
           else if (errorMessage != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),

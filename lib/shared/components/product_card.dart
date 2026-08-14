@@ -5,34 +5,43 @@ import 'network_image_box.dart';
 
 /// Medidas fijas del bloque de info de [ProductCard].
 ///
-/// Cada fila reserva su alto aunque el dato falte (descuento, envío): así
-/// todas las cards miden lo mismo y el texto largo nunca desborda.
+/// Cada fila reserva su alto aunque el dato falte (precio anterior, cuotas,
+/// envío): así todas las cards miden lo mismo y el texto largo nunca
+/// desborda. Orden según el diseño MeLi: título → precio anterior → precio
+/// (+ % OFF) → cuotas → envío.
 abstract final class ProductCardLayout {
+  static const double cardRadius = 8;
+
   static const double paddingHorizontal = 10;
   static const double paddingTop = 10;
   static const double paddingBottom = 12;
 
-  static const double priceFontSize = 16;
-  static const double priceLineHeight = 18;
-
-  static const double detailFontSize = 12;
-  static const double detailLineHeight = 16;
-
   static const double titleFontSize = 12;
   static const double titleLineHeight = 15;
   static const int titleMaxLines = 2;
+
+  static const double originalPriceFontSize = 11;
+  static const double originalPriceLineHeight = 14;
+
+  static const double priceFontSize = 17;
+  static const double priceLineHeight = 20;
+
+  static const double detailFontSize = 12;
+  static const double detailLineHeight = 16;
 
   static const double gapSmall = 2;
   static const double gap = 6;
 
   /// Alto total del bloque de texto bajo la imagen.
   static const double infoBlockHeight = paddingTop +
-      priceLineHeight +
-      gapSmall +
-      detailLineHeight + // descuento
-      gap +
       titleLineHeight * titleMaxLines +
       gap +
+      originalPriceLineHeight +
+      gapSmall +
+      priceLineHeight +
+      gapSmall +
+      detailLineHeight + // cuotas
+      gapSmall +
       detailLineHeight + // envío
       paddingBottom;
 
@@ -40,17 +49,20 @@ abstract final class ProductCardLayout {
   static double cardHeightFor(double width) => width + infoBlockHeight;
 }
 
-/// Card de producto estilo MeLi (imagen, título, precio, favorito dummy).
+/// Card de producto estilo MeLi (imagen, título, precios, favorito dummy).
 ///
 /// Totalmente stateless: el padre controla [isFavorite] y los callbacks.
 class ProductCard extends StatelessWidget {
   const ProductCard({
     super.key,
     required this.title,
-    required this.priceText,
+    this.priceText,
     this.imageUrl,
+    this.originalPriceText,
     this.discountLabel,
+    this.installmentsText,
     this.shippingLabel,
+    this.noPriceLabel = 'Precio no disponible',
     this.isFavorite = false,
     this.onTap,
     this.onFavoriteTap,
@@ -58,9 +70,25 @@ class ProductCard extends StatelessWidget {
   });
 
   final String title;
-  final String priceText;
+
+  /// Precio formateado. Null/vacío = sin oferta activa: se muestra
+  /// [noPriceLabel] en estilo atenuado.
+  final String? priceText;
+
+  /// Label para productos de catálogo sin publicaciones activas.
+  final String noPriceLabel;
+
   final String? imageUrl;
+
+  /// Precio anterior (se muestra tachado).
+  final String? originalPriceText;
+
+  /// Ej: "49% OFF", inline junto al precio.
   final String? discountLabel;
+
+  /// Ej: "en 12x $ 15.699".
+  final String? installmentsText;
+
   final String? shippingLabel;
   final bool isFavorite;
   final VoidCallback? onTap;
@@ -69,12 +97,14 @@ class ProductCard extends StatelessWidget {
   /// Ancho fijo (carrusel horizontal). Null = expandirse al padre (grilla).
   final double? width;
 
+  bool get _hasPrice => priceText != null && priceText!.isNotEmpty;
+
   @override
   Widget build(BuildContext context) {
     final card = Material(
       color: MeliColors.surface,
       elevation: 0,
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(ProductCardLayout.cardRadius),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -114,26 +144,6 @@ class ProductCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _FixedLine(
-                      height: ProductCardLayout.priceLineHeight,
-                      text: priceText,
-                      style: const TextStyle(
-                        fontSize: ProductCardLayout.priceFontSize,
-                        fontWeight: FontWeight.w400,
-                        color: MeliColors.textDark,
-                      ),
-                    ),
-                    const SizedBox(height: ProductCardLayout.gapSmall),
-                    _FixedLine(
-                      height: ProductCardLayout.detailLineHeight,
-                      text: discountLabel,
-                      style: const TextStyle(
-                        fontSize: ProductCardLayout.detailFontSize,
-                        fontWeight: FontWeight.w600,
-                        color: MeliColors.discount,
-                      ),
-                    ),
-                    const SizedBox(height: ProductCardLayout.gap),
                     SizedBox(
                       height: ProductCardLayout.titleLineHeight *
                           ProductCardLayout.titleMaxLines,
@@ -151,6 +161,75 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: ProductCardLayout.gap),
+                    _FixedLine(
+                      height: ProductCardLayout.originalPriceLineHeight,
+                      text: originalPriceText,
+                      style: const TextStyle(
+                        fontSize: ProductCardLayout.originalPriceFontSize,
+                        color: MeliColors.textMuted,
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: MeliColors.textMuted,
+                      ),
+                    ),
+                    const SizedBox(height: ProductCardLayout.gapSmall),
+                    SizedBox(
+                      height: ProductCardLayout.priceLineHeight,
+                      child: _hasPrice
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    priceText!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize:
+                                          ProductCardLayout.priceFontSize,
+                                      fontWeight: FontWeight.w500,
+                                      color: MeliColors.textDark,
+                                    ),
+                                  ),
+                                ),
+                                if (discountLabel != null &&
+                                    discountLabel!.isNotEmpty) ...[
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    discountLabel!,
+                                    style: const TextStyle(
+                                      fontSize:
+                                          ProductCardLayout.detailFontSize,
+                                      fontWeight: FontWeight.w600,
+                                      color: MeliColors.discount,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            )
+                          : Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                noPriceLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                  color: MeliColors.textMuted,
+                                ),
+                              ),
+                            ),
+                    ),
+                    const SizedBox(height: ProductCardLayout.gapSmall),
+                    _FixedLine(
+                      height: ProductCardLayout.detailLineHeight,
+                      text: installmentsText,
+                      style: const TextStyle(
+                        fontSize: ProductCardLayout.detailFontSize,
+                        color: MeliColors.textDark,
+                      ),
+                    ),
+                    const SizedBox(height: ProductCardLayout.gapSmall),
                     _FixedLine(
                       height: ProductCardLayout.detailLineHeight,
                       text: shippingLabel,

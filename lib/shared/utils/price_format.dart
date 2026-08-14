@@ -20,4 +20,10 @@ abstract final class PriceFormat {
     if (percent <= 0) return null;
     return '$percent% OFF';
   }
+
+  /// Ej: "en 12x $ 15.699" (cuotas simples, sin interés declarado).
+  static String installmentsArs(double price, {int count = 12}) {
+    if (price <= 0 || count <= 0) return '';
+    return 'en ${count}x ${ars(price / count)}';
+  }
 }

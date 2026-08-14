@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/meli_colors.dart';
-import '../../../../shared/components/product_card.dart';
-import '../../../../shared/utils/price_format.dart';
-import '../../../catalog/domain/entities/catalog_product.dart';
+import '../../../../shared/components/skeletons.dart';
+import '../../../catalog/presentation/components/product_results_grid.dart';
 import '../../../catalog/presentation/providers/featured_products_provider.dart';
 import 'home_section_header.dart';
 
@@ -12,12 +11,14 @@ import 'home_section_header.dart';
 class HomeFeaturedProductsSection extends ConsumerWidget {
   const HomeFeaturedProductsSection({
     super.key,
-    this.title = '',
-    this.query = '',
+    this.title = 'Inspirado en lo último que viste',
+    required this.query,
   });
 
   final String title;
   final String query;
+
+  static const _gridPadding = EdgeInsets.fromLTRB(8, 0, 8, 8);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,46 +47,17 @@ class HomeFeaturedProductsSection extends ConsumerWidget {
                   ),
                 );
               }
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    const crossAxisCount = 2;
-                    const spacing = 8.0;
-                    final itemWidth =
-                        (constraints.maxWidth -
-                            spacing * (crossAxisCount - 1)) /
-                        crossAxisCount;
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: list.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        mainAxisSpacing: spacing,
-                        crossAxisSpacing: spacing,
-                        // Alto exacto de la card: imagen cuadrada + info.
-                        mainAxisExtent: ProductCardLayout.cardHeightFor(
-                          itemWidth,
-                        ),
-                      ),
-                      itemBuilder: (context, index) {
-                        return _ProductGridItem(product: list[index]);
-                      },
-                    );
-                  },
-                ),
+              return ProductResultsGrid(
+                products: list,
+                shrinkWrap: true,
+                padding: _gridPadding,
               );
             },
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 32),
-              child: Center(
-                child: SizedBox(
-                  width: 28,
-                  height: 28,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
+            // Skeleton con las mismas proporciones que la grilla real.
+            loading: () => const ProductGridSkeleton(
+              itemCount: 6,
+              shrinkWrap: true,
+              padding: _gridPadding,
             ),
             error: (error, _) => Padding(
               padding: const EdgeInsets.all(16),
@@ -111,53 +83,6 @@ class HomeFeaturedProductsSection extends ConsumerWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ProductGridItem extends StatefulWidget {
-  const _ProductGridItem({required this.product});
-
-  final CatalogProduct product;
-
-  @override
-  State<_ProductGridItem> createState() => _ProductGridItemState();
-}
-
-/// Estado local mínimo solo para el favorito dummy (efímero de UI).
-class _ProductGridItemState extends State<_ProductGridItem> {
-  bool _favorite = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final product = widget.product;
-    final offer = product.bestOffer;
-    final priceText = offer != null
-        ? PriceFormat.ars(offer.price)
-        : 'Sin precio';
-    final discount = offer == null
-        ? null
-        : PriceFormat.discountPercent(offer.originalPrice, offer.price);
-    final shipping = offer?.freeShipping == true ? 'Envío gratis' : null;
-
-    return ProductCard(
-      title: product.title,
-      priceText: priceText,
-      imageUrl:
-          product.thumbnailUrl ??
-          (product.pictureUrls.isNotEmpty ? product.pictureUrls.first : null),
-      discountLabel: discount,
-      shippingLabel: shipping,
-      isFavorite: _favorite,
-      onFavoriteTap: () => setState(() => _favorite = !_favorite),
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(product.title),
-            duration: const Duration(seconds: 1),
-          ),
-        );
-      },
     );
   }
 }
