@@ -36,6 +36,7 @@ import '../../features/missions/domain/repositories/missions_repository.dart';
 import '../../features/missions/domain/usecases/claim_mission_rewards.dart';
 import '../../features/missions/domain/usecases/evaluate_missions.dart';
 import '../../features/missions/domain/usecases/get_active_missions.dart';
+import '../../features/missions/domain/usecases/reset_and_reseed_missions.dart';
 import '../../features/player/data/adapters/player_mission_reward_payer.dart';
 import '../../features/player/data/adapters/player_pesos_account.dart';
 import '../../features/player/data/adapters/player_purchase_recorder.dart';
@@ -164,5 +165,6 @@ void _setupMissions() {
     )
     ..registerFactory(() => GetActiveMissions(getIt()))
     ..registerFactory(() => EvaluateMissions(getIt()))
-    ..registerFactory(() => ClaimMissionRewards(getIt(), getIt()));
+    ..registerFactory(() => ClaimMissionRewards(getIt(), getIt()))
+    ..registerFactory(() => ResetAndReseedMissions(getIt()));
 }

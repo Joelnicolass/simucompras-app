@@ -33,7 +33,7 @@ final class MissionsProvider
   Missions create() => Missions();
 }
 
-String _$missionsHash() => r'0a77959d09311b86266ddb28c29943f8eed8948b';
+String _$missionsHash() => r'7a1dc8a1c91363e0fb0ec984623be61320ae5117';
 
 abstract class _$Missions extends $AsyncNotifier<List<Mission>> {
   FutureOr<List<Mission>> build();

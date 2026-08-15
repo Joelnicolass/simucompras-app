@@ -102,6 +102,22 @@ class MissionsRepositoryImpl implements MissionsRepository {
     }
   }
 
+  @override
+  Future<List<Mission>> resetAndReseed({DateTime? now}) async {
+    try {
+      final stamp = (now ?? DateTime.now()).millisecondsSinceEpoch;
+      final fresh = MissionCatalog.pick(
+        stamp: stamp,
+        count: GameConfig.activeMissionSlots,
+        excludeTitles: const {},
+      );
+      await _local.saveMissions(fresh);
+      return fresh;
+    } catch (e) {
+      throw MissionsStorageUnavailable(e);
+    }
+  }
+
   bool _matches(Mission mission, List<MissionProgressEvent> events) {
     return switch (mission) {
       BuyCategoryMission(:final categoryId) => events.any(
