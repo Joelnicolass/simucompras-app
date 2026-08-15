@@ -16,14 +16,9 @@ class HomeCategoriesCarouselSection extends ConsumerWidget {
 
     return categories.when(
       data: (list) => CategoryCarouselSection(
-        title: 'Categorías',
         items: [
           for (final c in list)
-            CategoryAvatarData(
-              id: c.id,
-              label: c.name,
-              imageUrl: c.pictureUrl,
-            ),
+            CategoryAvatarData(id: c.id, label: c.name, imageUrl: c.pictureUrl),
         ],
         onCategoryTap: (item) {
           context.push(
@@ -34,13 +29,8 @@ class HomeCategoriesCarouselSection extends ConsumerWidget {
           );
         },
       ),
-      loading: () => const CategoryCarouselSection(
-        title: 'Categorías',
-        items: [],
-        isLoading: true,
-      ),
+      loading: () => const CategoryCarouselSection(items: [], isLoading: true),
       error: (error, _) => CategoryCarouselSection(
-        title: 'Categorías',
         items: const [],
         errorMessage: error.toString(),
         onRetry: () => ref.invalidate(rootCategoriesProvider),

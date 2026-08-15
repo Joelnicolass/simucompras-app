@@ -9,7 +9,6 @@ import 'skeletons.dart';
 class CategoryCarouselSection extends StatelessWidget {
   const CategoryCarouselSection({
     super.key,
-    required this.title,
     required this.items,
     this.onCategoryTap,
     this.isLoading = false,
@@ -17,7 +16,6 @@ class CategoryCarouselSection extends StatelessWidget {
     this.onRetry,
   });
 
-  final String title;
   final List<CategoryAvatarData> items;
   final void Function(CategoryAvatarData item)? onCategoryTap;
   final bool isLoading;
@@ -31,17 +29,6 @@ class CategoryCarouselSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: MeliColors.textDark,
-              ),
-            ),
-          ),
           if (isLoading)
             // Skeleton con las mismas medidas del carrusel: sin saltos.
             const CategoryCarouselSkeleton()
@@ -68,10 +55,7 @@ class CategoryCarouselSection extends StatelessWidget {
               ),
             )
           else
-            CategoryAvatarCarousel(
-              items: items,
-              onCategoryTap: onCategoryTap,
-            ),
+            CategoryAvatarCarousel(items: items, onCategoryTap: onCategoryTap),
           const SizedBox(height: 8),
         ],
       ),
