@@ -74,6 +74,7 @@ class ProductResultsGrid extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) => GridView.builder(
             shrinkWrap: true,
+            padding: EdgeInsets.zero,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: products.length,
             gridDelegate: _gridDelegate(_itemWidth(constraints.maxWidth)),

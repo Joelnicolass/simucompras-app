@@ -31,10 +31,7 @@ class HomeFeaturedProductsSection extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ColoredBox(
-            color: MeliColors.surface,
-            child: HomeSectionHeader(title: title),
-          ),
+          HomeSectionHeader(title: title),
           products.when(
             data: (list) {
               if (list.isEmpty) {

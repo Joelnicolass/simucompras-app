@@ -101,6 +101,7 @@ class ProductGridSkeleton extends StatelessWidget {
                 crossAxisCount;
             return GridView.builder(
               shrinkWrap: shrinkWrap,
+              padding: EdgeInsets.zero,
               physics: shrinkWrap
                   ? const NeverScrollableScrollPhysics()
                   : null,
