@@ -119,6 +119,7 @@ final appRouter = GoRouter(
             productId: id,
             previewImageUrl: args?.imageUrl,
             previewTitle: args?.title,
+            previewRootCategoryId: args?.rootCategoryId,
           ),
         );
       },

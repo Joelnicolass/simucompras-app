@@ -198,6 +198,7 @@ class ProductGridItem extends ConsumerWidget {
                       ? product.pictureUrls.first
                       : null),
               title: product.title,
+              rootCategoryId: product.effectiveRootCategoryId,
             ),
           ),
     );

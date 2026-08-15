@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 mixin _$CatalogProduct {
 
  String get id; String get title; String get domainId; String get status; String? get thumbnailUrl; List<String> get pictureUrls; String? get shortDescription; List<ProductAttribute> get attributes;/// Oferta asociada si se enriqueció o se pidió detalle con ofertas.
- ProductOffer? get bestOffer;
+ ProductOffer? get bestOffer;/// Categoría raíz MLA (browse stamp y/o resuelta desde la oferta).
+/// Fuente de verdad para misiones `buyCategory`.
+ String? get rootCategoryId;
 /// Create a copy of CatalogProduct
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +28,16 @@ $CatalogProductCopyWith<CatalogProduct> get copyWith => _$CatalogProductCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogProduct&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.domainId, domainId) || other.domainId == domainId)&&(identical(other.status, status) || other.status == status)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&const DeepCollectionEquality().equals(other.pictureUrls, pictureUrls)&&(identical(other.shortDescription, shortDescription) || other.shortDescription == shortDescription)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.bestOffer, bestOffer) || other.bestOffer == bestOffer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CatalogProduct&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.domainId, domainId) || other.domainId == domainId)&&(identical(other.status, status) || other.status == status)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&const DeepCollectionEquality().equals(other.pictureUrls, pictureUrls)&&(identical(other.shortDescription, shortDescription) || other.shortDescription == shortDescription)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.bestOffer, bestOffer) || other.bestOffer == bestOffer)&&(identical(other.rootCategoryId, rootCategoryId) || other.rootCategoryId == rootCategoryId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,domainId,status,thumbnailUrl,const DeepCollectionEquality().hash(pictureUrls),shortDescription,const DeepCollectionEquality().hash(attributes),bestOffer);
+int get hashCode => Object.hash(runtimeType,id,title,domainId,status,thumbnailUrl,const DeepCollectionEquality().hash(pictureUrls),shortDescription,const DeepCollectionEquality().hash(attributes),bestOffer,rootCategoryId);
 
 @override
 String toString() {
-  return 'CatalogProduct(id: $id, title: $title, domainId: $domainId, status: $status, thumbnailUrl: $thumbnailUrl, pictureUrls: $pictureUrls, shortDescription: $shortDescription, attributes: $attributes, bestOffer: $bestOffer)';
+  return 'CatalogProduct(id: $id, title: $title, domainId: $domainId, status: $status, thumbnailUrl: $thumbnailUrl, pictureUrls: $pictureUrls, shortDescription: $shortDescription, attributes: $attributes, bestOffer: $bestOffer, rootCategoryId: $rootCategoryId)';
 }
 
 
@@ -46,7 +48,7 @@ abstract mixin class $CatalogProductCopyWith<$Res>  {
   factory $CatalogProductCopyWith(CatalogProduct value, $Res Function(CatalogProduct) _then) = _$CatalogProductCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String domainId, String status, String? thumbnailUrl, List<String> pictureUrls, String? shortDescription, List<ProductAttribute> attributes, ProductOffer? bestOffer
+ String id, String title, String domainId, String status, String? thumbnailUrl, List<String> pictureUrls, String? shortDescription, List<ProductAttribute> attributes, ProductOffer? bestOffer, String? rootCategoryId
 });
 
 
@@ -63,7 +65,7 @@ class _$CatalogProductCopyWithImpl<$Res>
 
 /// Create a copy of CatalogProduct
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? domainId = null,Object? status = null,Object? thumbnailUrl = freezed,Object? pictureUrls = null,Object? shortDescription = freezed,Object? attributes = null,Object? bestOffer = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? domainId = null,Object? status = null,Object? thumbnailUrl = freezed,Object? pictureUrls = null,Object? shortDescription = freezed,Object? attributes = null,Object? bestOffer = freezed,Object? rootCategoryId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -74,7 +76,8 @@ as String?,pictureUrls: null == pictureUrls ? _self.pictureUrls : pictureUrls //
 as List<String>,shortDescription: freezed == shortDescription ? _self.shortDescription : shortDescription // ignore: cast_nullable_to_non_nullable
 as String?,attributes: null == attributes ? _self.attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<ProductAttribute>,bestOffer: freezed == bestOffer ? _self.bestOffer : bestOffer // ignore: cast_nullable_to_non_nullable
-as ProductOffer?,
+as ProductOffer?,rootCategoryId: freezed == rootCategoryId ? _self.rootCategoryId : rootCategoryId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of CatalogProduct
@@ -171,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String domainId,  String status,  String? thumbnailUrl,  List<String> pictureUrls,  String? shortDescription,  List<ProductAttribute> attributes,  ProductOffer? bestOffer)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String domainId,  String status,  String? thumbnailUrl,  List<String> pictureUrls,  String? shortDescription,  List<ProductAttribute> attributes,  ProductOffer? bestOffer,  String? rootCategoryId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CatalogProduct() when $default != null:
-return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnailUrl,_that.pictureUrls,_that.shortDescription,_that.attributes,_that.bestOffer);case _:
+return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnailUrl,_that.pictureUrls,_that.shortDescription,_that.attributes,_that.bestOffer,_that.rootCategoryId);case _:
   return orElse();
 
 }
@@ -192,10 +195,10 @@ return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnail
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String domainId,  String status,  String? thumbnailUrl,  List<String> pictureUrls,  String? shortDescription,  List<ProductAttribute> attributes,  ProductOffer? bestOffer)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String domainId,  String status,  String? thumbnailUrl,  List<String> pictureUrls,  String? shortDescription,  List<ProductAttribute> attributes,  ProductOffer? bestOffer,  String? rootCategoryId)  $default,) {final _that = this;
 switch (_that) {
 case _CatalogProduct():
-return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnailUrl,_that.pictureUrls,_that.shortDescription,_that.attributes,_that.bestOffer);case _:
+return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnailUrl,_that.pictureUrls,_that.shortDescription,_that.attributes,_that.bestOffer,_that.rootCategoryId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -212,10 +215,10 @@ return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnail
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String domainId,  String status,  String? thumbnailUrl,  List<String> pictureUrls,  String? shortDescription,  List<ProductAttribute> attributes,  ProductOffer? bestOffer)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String domainId,  String status,  String? thumbnailUrl,  List<String> pictureUrls,  String? shortDescription,  List<ProductAttribute> attributes,  ProductOffer? bestOffer,  String? rootCategoryId)?  $default,) {final _that = this;
 switch (_that) {
 case _CatalogProduct() when $default != null:
-return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnailUrl,_that.pictureUrls,_that.shortDescription,_that.attributes,_that.bestOffer);case _:
+return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnailUrl,_that.pictureUrls,_that.shortDescription,_that.attributes,_that.bestOffer,_that.rootCategoryId);case _:
   return null;
 
 }
@@ -227,7 +230,7 @@ return $default(_that.id,_that.title,_that.domainId,_that.status,_that.thumbnail
 
 
 class _CatalogProduct extends CatalogProduct {
-  const _CatalogProduct({required this.id, required this.title, required this.domainId, required this.status, this.thumbnailUrl, final  List<String> pictureUrls = const [], this.shortDescription, final  List<ProductAttribute> attributes = const [], this.bestOffer}): _pictureUrls = pictureUrls,_attributes = attributes,super._();
+  const _CatalogProduct({required this.id, required this.title, required this.domainId, required this.status, this.thumbnailUrl, final  List<String> pictureUrls = const [], this.shortDescription, final  List<ProductAttribute> attributes = const [], this.bestOffer, this.rootCategoryId}): _pictureUrls = pictureUrls,_attributes = attributes,super._();
   
 
 @override final  String id;
@@ -252,6 +255,9 @@ class _CatalogProduct extends CatalogProduct {
 
 /// Oferta asociada si se enriqueció o se pidió detalle con ofertas.
 @override final  ProductOffer? bestOffer;
+/// Categoría raíz MLA (browse stamp y/o resuelta desde la oferta).
+/// Fuente de verdad para misiones `buyCategory`.
+@override final  String? rootCategoryId;
 
 /// Create a copy of CatalogProduct
 /// with the given fields replaced by the non-null parameter values.
@@ -263,16 +269,16 @@ _$CatalogProductCopyWith<_CatalogProduct> get copyWith => __$CatalogProductCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogProduct&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.domainId, domainId) || other.domainId == domainId)&&(identical(other.status, status) || other.status == status)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&const DeepCollectionEquality().equals(other._pictureUrls, _pictureUrls)&&(identical(other.shortDescription, shortDescription) || other.shortDescription == shortDescription)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.bestOffer, bestOffer) || other.bestOffer == bestOffer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CatalogProduct&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.domainId, domainId) || other.domainId == domainId)&&(identical(other.status, status) || other.status == status)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&const DeepCollectionEquality().equals(other._pictureUrls, _pictureUrls)&&(identical(other.shortDescription, shortDescription) || other.shortDescription == shortDescription)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.bestOffer, bestOffer) || other.bestOffer == bestOffer)&&(identical(other.rootCategoryId, rootCategoryId) || other.rootCategoryId == rootCategoryId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,title,domainId,status,thumbnailUrl,const DeepCollectionEquality().hash(_pictureUrls),shortDescription,const DeepCollectionEquality().hash(_attributes),bestOffer);
+int get hashCode => Object.hash(runtimeType,id,title,domainId,status,thumbnailUrl,const DeepCollectionEquality().hash(_pictureUrls),shortDescription,const DeepCollectionEquality().hash(_attributes),bestOffer,rootCategoryId);
 
 @override
 String toString() {
-  return 'CatalogProduct(id: $id, title: $title, domainId: $domainId, status: $status, thumbnailUrl: $thumbnailUrl, pictureUrls: $pictureUrls, shortDescription: $shortDescription, attributes: $attributes, bestOffer: $bestOffer)';
+  return 'CatalogProduct(id: $id, title: $title, domainId: $domainId, status: $status, thumbnailUrl: $thumbnailUrl, pictureUrls: $pictureUrls, shortDescription: $shortDescription, attributes: $attributes, bestOffer: $bestOffer, rootCategoryId: $rootCategoryId)';
 }
 
 
@@ -283,7 +289,7 @@ abstract mixin class _$CatalogProductCopyWith<$Res> implements $CatalogProductCo
   factory _$CatalogProductCopyWith(_CatalogProduct value, $Res Function(_CatalogProduct) _then) = __$CatalogProductCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String domainId, String status, String? thumbnailUrl, List<String> pictureUrls, String? shortDescription, List<ProductAttribute> attributes, ProductOffer? bestOffer
+ String id, String title, String domainId, String status, String? thumbnailUrl, List<String> pictureUrls, String? shortDescription, List<ProductAttribute> attributes, ProductOffer? bestOffer, String? rootCategoryId
 });
 
 
@@ -300,7 +306,7 @@ class __$CatalogProductCopyWithImpl<$Res>
 
 /// Create a copy of CatalogProduct
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? domainId = null,Object? status = null,Object? thumbnailUrl = freezed,Object? pictureUrls = null,Object? shortDescription = freezed,Object? attributes = null,Object? bestOffer = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? domainId = null,Object? status = null,Object? thumbnailUrl = freezed,Object? pictureUrls = null,Object? shortDescription = freezed,Object? attributes = null,Object? bestOffer = freezed,Object? rootCategoryId = freezed,}) {
   return _then(_CatalogProduct(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -311,7 +317,8 @@ as String?,pictureUrls: null == pictureUrls ? _self._pictureUrls : pictureUrls /
 as List<String>,shortDescription: freezed == shortDescription ? _self.shortDescription : shortDescription // ignore: cast_nullable_to_non_nullable
 as String?,attributes: null == attributes ? _self._attributes : attributes // ignore: cast_nullable_to_non_nullable
 as List<ProductAttribute>,bestOffer: freezed == bestOffer ? _self.bestOffer : bestOffer // ignore: cast_nullable_to_non_nullable
-as ProductOffer?,
+as ProductOffer?,rootCategoryId: freezed == rootCategoryId ? _self.rootCategoryId : rootCategoryId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

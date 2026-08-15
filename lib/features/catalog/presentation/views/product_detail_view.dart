@@ -25,11 +25,15 @@ class ProductDetailView extends ConsumerWidget {
     required this.productId,
     this.previewImageUrl,
     this.previewTitle,
+    this.previewRootCategoryId,
   });
 
   final String productId;
   final String? previewImageUrl;
   final String? previewTitle;
+
+  /// Categoría raíz del listado de origen (fallback si el PDP no la trae).
+  final String? previewRootCategoryId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -100,7 +104,10 @@ class ProductDetailView extends ConsumerWidget {
               ),
             ),
             if (product != null)
-              _ProductActions(product: product)
+              _ProductActions(
+                product: product,
+                previewRootCategoryId: previewRootCategoryId,
+              )
             else
               const ActionFooter(
                 child: SkeletonBox(height: 48, borderRadius: MeliRadii.button),
@@ -179,9 +186,13 @@ class _ProductInfo extends StatelessWidget {
 }
 
 class _ProductActions extends ConsumerWidget {
-  const _ProductActions({required this.product});
+  const _ProductActions({
+    required this.product,
+    this.previewRootCategoryId,
+  });
 
   final CatalogProduct product;
+  final String? previewRootCategoryId;
 
   CartLine _toLine() {
     final offer = product.bestOffer;
@@ -199,8 +210,8 @@ class _ProductActions extends ConsumerWidget {
       originalUnitPrice: display.originalAmount,
       quantity: 1,
       isSuperOffer: display.isSuperOffer,
-      // Preferimos raíz (misiones); fallback a hoja si no se pudo enriquecer.
-      categoryId: product.rootCategoryId ?? product.categoryId,
+      // Raíz MLA para misiones buyCategory (browse stamp / oferta / preview).
+      categoryId: product.effectiveRootCategoryId ?? previewRootCategoryId,
     );
   }
 

@@ -27,15 +27,20 @@ class CatalogRepositoryImpl implements CatalogRepository {
     try {
       final header = await _authorizationHeader();
       final keywords = await _resolveKeywords(params, header);
+      final browseRoot = await _resolveRootCategoryId(
+        header,
+        params.categoryId,
+      );
 
       if (!params.includeOffers) {
-        return _remote.searchProducts(
+        final page = await _remote.searchProducts(
           authorizationHeader: header,
           siteId: AppConfig.mercadoLibreSiteId,
           keywords: keywords,
           limit: params.limit,
           offset: params.offset,
         );
+        return _stampBrowseRoot(page, browseRoot);
       }
 
       return await _searchWithOffers(
@@ -43,6 +48,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
         keywords: keywords,
         limit: params.limit,
         offset: params.offset,
+        browseRootCategoryId: browseRoot,
       );
     } on CatalogFailure {
       rethrow;
@@ -71,6 +77,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
     required String keywords,
     required int limit,
     required int offset,
+    String? browseRootCategoryId,
   }) async {
     final page = await _remote.searchProducts(
       authorizationHeader: header,
@@ -86,7 +93,14 @@ class CatalogRepositoryImpl implements CatalogRepository {
       page.results.map((product) async {
         final offers = await _safeOffers(header, product.id);
         final best = offers.isEmpty ? null : offers.first;
-        return best == null ? product : product.copyWith(bestOffer: best);
+        return product.copyWith(
+          bestOffer: best,
+          // Oferta resuelta gana; si no hay, stamp del browse (ej. Deportes).
+          rootCategoryId:
+              best?.rootCategoryId ??
+              browseRootCategoryId ??
+              product.rootCategoryId,
+        );
       }),
     );
 
@@ -108,6 +122,19 @@ class CatalogRepositoryImpl implements CatalogRepository {
       total: page.total,
       limit: limit,
       offset: offset,
+    );
+  }
+
+  ProductSearchPage _stampBrowseRoot(
+    ProductSearchPage page,
+    String? browseRoot,
+  ) {
+    if (browseRoot == null || browseRoot.isEmpty) return page;
+    return page.copyWith(
+      results: [
+        for (final p in page.results)
+          p.copyWith(rootCategoryId: p.rootCategoryId ?? browseRoot),
+      ],
     );
   }
 
@@ -164,7 +191,10 @@ class CatalogRepositoryImpl implements CatalogRepository {
 
       final offers = await _safeOffers(header, productId);
       final best = offers.isEmpty ? null : offers.first;
-      return product.copyWith(bestOffer: best);
+      return product.copyWith(
+        bestOffer: best,
+        rootCategoryId: best?.rootCategoryId ?? product.rootCategoryId,
+      );
     } on CatalogFailure {
       rethrow;
     } on HttpException catch (error) {
@@ -262,27 +292,40 @@ class CatalogRepositoryImpl implements CatalogRepository {
     if (leaf == null || leaf.isEmpty) return offer;
     if (offer.rootCategoryId != null) return offer;
 
-    final cached = _rootCategoryByLeaf[leaf];
-    if (cached != null) {
-      return offer.copyWith(rootCategoryId: cached);
-    }
+    final root = await _resolveRootCategoryId(authorizationHeader, leaf);
+    if (root == null) return offer;
+    return offer.copyWith(rootCategoryId: root);
+  }
+
+  Future<String?> _resolveRootCategoryId(
+    String authorizationHeader,
+    String? categoryId,
+  ) async {
+    final id = categoryId?.trim();
+    if (id == null || id.isEmpty) return null;
+
+    final cached = _rootCategoryByLeaf[id];
+    if (cached != null) return cached;
 
     try {
       final category = await _remote.getCategoryById(
         authorizationHeader: authorizationHeader,
-        categoryId: leaf,
+        categoryId: id,
       );
       final root = MeliCategoryPath.resolveRootId(
-        leafId: leaf,
+        leafId: id,
         pathFromRootIds: category.pathFromRoot.map((n) => n.id),
       );
       if (root != null) {
-        _rootCategoryByLeaf[leaf] = root;
-        return offer.copyWith(rootCategoryId: root);
+        _rootCategoryByLeaf[id] = root;
+        return root;
       }
     } catch (_) {
-      // Sin path: dejamos solo categoryId hoja.
+      // Sin path: si ya es conocida como raíz, la devolvemos igual.
     }
-    return offer;
+    return MeliCategoryPath.resolveRootId(
+      leafId: id,
+      pathFromRootIds: const [],
+    );
   }
 }

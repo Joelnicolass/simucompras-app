@@ -19,6 +19,10 @@ abstract class CatalogProduct with _$CatalogProduct {
 
     /// Oferta asociada si se enriqueció o se pidió detalle con ofertas.
     ProductOffer? bestOffer,
+
+    /// Categoría raíz MLA (browse stamp y/o resuelta desde la oferta).
+    /// Fuente de verdad para misiones `buyCategory`.
+    String? rootCategoryId,
   }) = _CatalogProduct;
 
   double? get price => bestOffer?.price;
@@ -28,8 +32,9 @@ abstract class CatalogProduct with _$CatalogProduct {
   /// Categoría hoja de la oferta (MeLi).
   String? get categoryId => bestOffer?.categoryId;
 
-  /// Categoría raíz MLA (enriquecida en data). Preferida para misiones.
-  String? get rootCategoryId => bestOffer?.rootCategoryId;
+  /// Raíz efectiva: stamp del producto o la de la oferta.
+  String? get effectiveRootCategoryId =>
+      rootCategoryId ?? bestOffer?.rootCategoryId;
 }
 
 @freezed

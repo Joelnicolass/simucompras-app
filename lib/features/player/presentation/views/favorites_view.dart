@@ -58,6 +58,7 @@ class FavoritesView extends ConsumerWidget {
                             ? p.pictureUrls.first
                             : null),
                     title: p.title,
+                    rootCategoryId: p.effectiveRootCategoryId,
                   ),
                 ),
               );
