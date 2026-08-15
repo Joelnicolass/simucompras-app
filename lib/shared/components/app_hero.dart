@@ -30,7 +30,10 @@ class AppHero extends StatelessWidget {
 
     return Heroine(
       tag: tag,
-      // Curva acotada (≤400ms): el spring default se siente lento.
+      // Shell indexedStack deja Home + Favoritos montados: el mismo producto
+      // puede aparecer dos veces. `last` evita el assert y prioriza la rama
+      // más reciente (p. ej. favoritos al navegar desde ahí).
+      duplicatePolicy: DuplicateHeroinePolicy.last,
       motion: const CurvedMotion(kAppMotionMax, Curves.easeOutCubic),
       flightShuttleBuilder: const FadeShuttleBuilder(),
       child: child,
