@@ -33,7 +33,7 @@ final class PurchaseHistoryProvider
   PurchaseHistory create() => PurchaseHistory();
 }
 
-String _$purchaseHistoryHash() => r'902d27fe4378ce47a40c857ff3a18d40f1010b17';
+String _$purchaseHistoryHash() => r'e7f81bd7b74a109560ded69900aa30f88d84cec1';
 
 abstract class _$PurchaseHistory extends $AsyncNotifier<List<PurchaseRecord>> {
   FutureOr<List<PurchaseRecord>> build();

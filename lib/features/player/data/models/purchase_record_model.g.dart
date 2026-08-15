@@ -14,6 +14,8 @@ _PurchaseLineModel _$PurchaseLineModelFromJson(Map<String, dynamic> json) =>
       unitPrice: (json['unitPrice'] as num).toDouble(),
       quantity: (json['quantity'] as num).toInt(),
       isSuperOffer: json['isSuperOffer'] as bool? ?? false,
+      categoryId: json['categoryId'] as String?,
+      soldQuantity: (json['soldQuantity'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$PurchaseLineModelToJson(_PurchaseLineModel instance) =>
@@ -24,6 +26,8 @@ Map<String, dynamic> _$PurchaseLineModelToJson(_PurchaseLineModel instance) =>
       'unitPrice': instance.unitPrice,
       'quantity': instance.quantity,
       'isSuperOffer': instance.isSuperOffer,
+      'categoryId': instance.categoryId,
+      'soldQuantity': instance.soldQuantity,
     };
 
 _PurchaseRecordModel _$PurchaseRecordModelFromJson(Map<String, dynamic> json) =>

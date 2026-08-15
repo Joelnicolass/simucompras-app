@@ -1,8 +1,10 @@
 import '../../../../core/config/game_config.dart';
 import '../../domain/datasources/player_local_datasource.dart';
+import '../../domain/entities/player_progress.dart';
 import '../../domain/entities/player_wallet.dart';
 import '../../domain/entities/purchase_record.dart';
 import '../../domain/entities/search_history_entry.dart';
+import '../../domain/entities/sell_result.dart';
 import '../../domain/errors/player_failure.dart';
 import '../../domain/repositories/player_repository.dart';
 
@@ -47,8 +49,13 @@ class PlayerRepositoryImpl implements PlayerRepository {
         return stamped;
       }
 
+      final progress = await getProgress();
+      final level = GameConfig.levelForXp(progress.xp);
+      final topUp = GameConfig.dailyTopUpPesos +
+          (level - 1) * GameConfig.dailyTopUpPerLevel;
+
       final topped = wallet.copyWith(
-        balancePesos: wallet.balancePesos + GameConfig.dailyTopUpPesos,
+        balancePesos: wallet.balancePesos + topUp,
         lastDailyTopUpDate: today,
       );
       await _local.saveWallet(topped);
@@ -160,6 +167,44 @@ class PlayerRepositoryImpl implements PlayerRepository {
   }
 
   @override
+  Future<SellResult> sellPurchaseUnit({
+    required String orderId,
+    required String productId,
+  }) async {
+    try {
+      final history = await _local.readPurchaseHistory();
+      final orderIndex = history.indexWhere((r) => r.id == orderId);
+      if (orderIndex < 0) throw PurchaseNotFound(orderId);
+
+      final order = history[orderIndex];
+      final lineIndex = order.lines.indexWhere((l) => l.productId == productId);
+      if (lineIndex < 0) throw PurchaseNotFound(orderId);
+
+      final line = order.lines[lineIndex];
+      if (line.availableQuantity <= 0) throw const NothingToSell();
+
+      final credited = GameConfig.resalePesosFor(productId, line.unitPrice);
+      final updatedLine = line.copyWith(soldQuantity: line.soldQuantity + 1);
+      final updatedLines = [...order.lines];
+      updatedLines[lineIndex] = updatedLine;
+      final updatedOrder = order.copyWith(lines: updatedLines);
+      final updatedHistory = [...history];
+      updatedHistory[orderIndex] = updatedOrder;
+
+      await _local.savePurchaseHistory(updatedHistory);
+      await creditPesos(credited);
+
+      return SellResult(
+        creditedPesos: credited,
+        productTitle: line.title,
+      );
+    } catch (e) {
+      if (e is PlayerFailure) rethrow;
+      throw PlayerStorageUnavailable(e);
+    }
+  }
+
+  @override
   Future<Set<String>> getFavoriteIds() async {
     try {
       return (await _local.readFavoriteIds()).toSet();
@@ -187,6 +232,39 @@ class PlayerRepositoryImpl implements PlayerRepository {
       await _local.saveFavoriteIds(set);
       return !exists;
     } catch (e) {
+      throw PlayerStorageUnavailable(e);
+    }
+  }
+
+  @override
+  Future<PlayerProgress> getProgress() async {
+    try {
+      final existing = await _local.readProgress();
+      if (existing != null) return existing;
+      const initial = PlayerProgress();
+      await _local.saveProgress(initial);
+      return initial;
+    } catch (e) {
+      throw PlayerStorageUnavailable(e);
+    }
+  }
+
+  @override
+  Future<PlayerProgress> addXp(int amount) async {
+    try {
+      if (amount <= 0) return getProgress();
+      final before = await getProgress();
+      final levelBefore = GameConfig.levelForXp(before.xp);
+      final after = PlayerProgress(xp: before.xp + amount);
+      await _local.saveProgress(after);
+      final levelAfter = GameConfig.levelForXp(after.xp);
+      final levelsGained = levelAfter - levelBefore;
+      if (levelsGained > 0) {
+        await creditPesos(levelsGained * GameConfig.levelUpBonusPesos);
+      }
+      return after;
+    } catch (e) {
+      if (e is PlayerFailure) rethrow;
       throw PlayerStorageUnavailable(e);
     }
   }

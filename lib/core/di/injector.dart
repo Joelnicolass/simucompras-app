@@ -29,13 +29,20 @@ import '../../features/catalog/domain/usecases/get_product_offers.dart';
 import '../../features/catalog/domain/usecases/get_root_categories.dart';
 import '../../features/catalog/domain/usecases/search_products.dart';
 import '../../features/missions/data/datasources/missions_local_datasource_impl.dart';
+import '../../features/missions/data/datasources/weekly_challenge_local_datasource_impl.dart';
 import '../../features/missions/data/repositories/missions_repository_impl.dart';
+import '../../features/missions/data/repositories/weekly_challenge_repository_impl.dart';
 import '../../features/missions/domain/datasources/missions_local_datasource.dart';
+import '../../features/missions/domain/datasources/weekly_challenge_local_datasource.dart';
 import '../../features/missions/domain/repositories/mission_reward_payer.dart';
 import '../../features/missions/domain/repositories/missions_repository.dart';
+import '../../features/missions/domain/repositories/weekly_challenge_repository.dart';
 import '../../features/missions/domain/usecases/claim_mission_rewards.dart';
+import '../../features/missions/domain/usecases/claim_weekly_challenge_reward.dart';
 import '../../features/missions/domain/usecases/evaluate_missions.dart';
+import '../../features/missions/domain/usecases/evaluate_weekly_challenge.dart';
 import '../../features/missions/domain/usecases/get_active_missions.dart';
+import '../../features/missions/domain/usecases/get_weekly_challenge.dart';
 import '../../features/missions/domain/usecases/reset_and_reseed_missions.dart';
 import '../../features/player/data/adapters/player_mission_reward_payer.dart';
 import '../../features/player/data/adapters/player_pesos_account.dart';
@@ -44,15 +51,18 @@ import '../../features/player/data/datasources/player_local_datasource_impl.dart
 import '../../features/player/data/repositories/player_repository_impl.dart';
 import '../../features/player/domain/datasources/player_local_datasource.dart';
 import '../../features/player/domain/repositories/player_repository.dart';
+import '../../features/player/domain/usecases/add_player_xp.dart';
 import '../../features/player/domain/usecases/add_purchase.dart';
 import '../../features/player/domain/usecases/credit_pesos.dart';
 import '../../features/player/domain/usecases/ensure_daily_top_up.dart';
 import '../../features/player/domain/usecases/get_favorite_ids.dart';
+import '../../features/player/domain/usecases/get_player_progress.dart';
 import '../../features/player/domain/usecases/get_purchase_history.dart';
 import '../../features/player/domain/usecases/get_recent_searches.dart';
 import '../../features/player/domain/usecases/get_wallet.dart';
 import '../../features/player/domain/usecases/record_search.dart';
 import '../../features/player/domain/usecases/remove_search.dart';
+import '../../features/player/domain/usecases/sell_purchase_unit.dart';
 import '../../features/player/domain/usecases/spend_pesos.dart';
 import '../../features/player/domain/usecases/toggle_favorite.dart';
 import '../config/app_config.dart';
@@ -136,6 +146,9 @@ void _setupPlayer() {
     ..registerFactory(() => RemoveSearch(getIt()))
     ..registerFactory(() => GetPurchaseHistory(getIt()))
     ..registerFactory(() => AddPurchase(getIt()))
+    ..registerFactory(() => SellPurchaseUnit(getIt()))
+    ..registerFactory(() => GetPlayerProgress(getIt()))
+    ..registerFactory(() => AddPlayerXp(getIt()))
     ..registerFactory(() => GetFavoriteIds(getIt()))
     ..registerFactory(() => ToggleFavorite(getIt()));
 }
@@ -163,8 +176,17 @@ void _setupMissions() {
     ..registerLazySingleton<MissionsRepository>(
       () => MissionsRepositoryImpl(getIt()),
     )
+    ..registerLazySingleton<WeeklyChallengeLocalDatasource>(
+      () => WeeklyChallengeLocalDatasourceImpl(getIt()),
+    )
+    ..registerLazySingleton<WeeklyChallengeRepository>(
+      () => WeeklyChallengeRepositoryImpl(getIt()),
+    )
     ..registerFactory(() => GetActiveMissions(getIt()))
     ..registerFactory(() => EvaluateMissions(getIt()))
     ..registerFactory(() => ClaimMissionRewards(getIt(), getIt()))
-    ..registerFactory(() => ResetAndReseedMissions(getIt()));
+    ..registerFactory(() => ResetAndReseedMissions(getIt()))
+    ..registerFactory(() => GetWeeklyChallenge(getIt()))
+    ..registerFactory(() => EvaluateWeeklyChallenge(getIt()))
+    ..registerFactory(() => ClaimWeeklyChallengeReward(getIt(), getIt()));
 }

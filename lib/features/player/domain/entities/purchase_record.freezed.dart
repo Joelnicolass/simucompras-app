@@ -14,7 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PurchaseLine {
 
- String get productId; String get title; String? get thumbnailUrl; double get unitPrice; int get quantity; bool get isSuperOffer;
+ String get productId; String get title; String? get thumbnailUrl; double get unitPrice; int get quantity; bool get isSuperOffer; String? get categoryId;/// Unidades ya revendidas (0..quantity).
+ int get soldQuantity;
 /// Create a copy of PurchaseLine
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +26,16 @@ $PurchaseLineCopyWith<PurchaseLine> get copyWith => _$PurchaseLineCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseLine&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseLine&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.soldQuantity, soldQuantity) || other.soldQuantity == soldQuantity));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer);
+int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer,categoryId,soldQuantity);
 
 @override
 String toString() {
-  return 'PurchaseLine(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer)';
+  return 'PurchaseLine(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer, categoryId: $categoryId, soldQuantity: $soldQuantity)';
 }
 
 
@@ -45,7 +46,7 @@ abstract mixin class $PurchaseLineCopyWith<$Res>  {
   factory $PurchaseLineCopyWith(PurchaseLine value, $Res Function(PurchaseLine) _then) = _$PurchaseLineCopyWithImpl;
 @useResult
 $Res call({
- String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer
+ String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer, String? categoryId, int soldQuantity
 });
 
 
@@ -62,7 +63,7 @@ class _$PurchaseLineCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseLine
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,Object? categoryId = freezed,Object? soldQuantity = null,}) {
   return _then(_self.copyWith(
 productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -70,7 +71,9 @@ as String,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnail
 as String?,unitPrice: null == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
 as double,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as int,isSuperOffer: null == isSuperOffer ? _self.isSuperOffer : isSuperOffer // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,soldQuantity: null == soldQuantity ? _self.soldQuantity : soldQuantity // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -155,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer,  String? categoryId,  int soldQuantity)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PurchaseLine() when $default != null:
-return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer);case _:
+return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer,_that.categoryId,_that.soldQuantity);case _:
   return orElse();
 
 }
@@ -176,10 +179,10 @@ return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer,  String? categoryId,  int soldQuantity)  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseLine():
-return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer);case _:
+return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer,_that.categoryId,_that.soldQuantity);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +199,10 @@ return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer,  String? categoryId,  int soldQuantity)?  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseLine() when $default != null:
-return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer);case _:
+return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer,_that.categoryId,_that.soldQuantity);case _:
   return null;
 
 }
@@ -210,8 +213,8 @@ return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_
 /// @nodoc
 
 
-class _PurchaseLine implements PurchaseLine {
-  const _PurchaseLine({required this.productId, required this.title, this.thumbnailUrl, required this.unitPrice, required this.quantity, this.isSuperOffer = false});
+class _PurchaseLine extends PurchaseLine {
+  const _PurchaseLine({required this.productId, required this.title, this.thumbnailUrl, required this.unitPrice, required this.quantity, this.isSuperOffer = false, this.categoryId, this.soldQuantity = 0}): super._();
   
 
 @override final  String productId;
@@ -220,6 +223,9 @@ class _PurchaseLine implements PurchaseLine {
 @override final  double unitPrice;
 @override final  int quantity;
 @override@JsonKey() final  bool isSuperOffer;
+@override final  String? categoryId;
+/// Unidades ya revendidas (0..quantity).
+@override@JsonKey() final  int soldQuantity;
 
 /// Create a copy of PurchaseLine
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +237,16 @@ _$PurchaseLineCopyWith<_PurchaseLine> get copyWith => __$PurchaseLineCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseLine&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseLine&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.soldQuantity, soldQuantity) || other.soldQuantity == soldQuantity));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer);
+int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer,categoryId,soldQuantity);
 
 @override
 String toString() {
-  return 'PurchaseLine(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer)';
+  return 'PurchaseLine(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer, categoryId: $categoryId, soldQuantity: $soldQuantity)';
 }
 
 
@@ -251,7 +257,7 @@ abstract mixin class _$PurchaseLineCopyWith<$Res> implements $PurchaseLineCopyWi
   factory _$PurchaseLineCopyWith(_PurchaseLine value, $Res Function(_PurchaseLine) _then) = __$PurchaseLineCopyWithImpl;
 @override @useResult
 $Res call({
- String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer
+ String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer, String? categoryId, int soldQuantity
 });
 
 
@@ -268,7 +274,7 @@ class __$PurchaseLineCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseLine
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,Object? categoryId = freezed,Object? soldQuantity = null,}) {
   return _then(_PurchaseLine(
 productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -276,7 +282,9 @@ as String,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnail
 as String?,unitPrice: null == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
 as double,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as int,isSuperOffer: null == isSuperOffer ? _self.isSuperOffer : isSuperOffer // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,soldQuantity: null == soldQuantity ? _self.soldQuantity : soldQuantity // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -553,6 +561,287 @@ as List<PurchaseLine>,
 }
 
 
+}
+
+/// @nodoc
+mixin _$InventoryItem {
+
+ String get orderId; DateTime get purchasedAt; PurchaseLine get line;
+/// Create a copy of InventoryItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$InventoryItemCopyWith<InventoryItem> get copyWith => _$InventoryItemCopyWithImpl<InventoryItem>(this as InventoryItem, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryItem&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.purchasedAt, purchasedAt) || other.purchasedAt == purchasedAt)&&(identical(other.line, line) || other.line == line));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,orderId,purchasedAt,line);
+
+@override
+String toString() {
+  return 'InventoryItem(orderId: $orderId, purchasedAt: $purchasedAt, line: $line)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $InventoryItemCopyWith<$Res>  {
+  factory $InventoryItemCopyWith(InventoryItem value, $Res Function(InventoryItem) _then) = _$InventoryItemCopyWithImpl;
+@useResult
+$Res call({
+ String orderId, DateTime purchasedAt, PurchaseLine line
+});
+
+
+$PurchaseLineCopyWith<$Res> get line;
+
+}
+/// @nodoc
+class _$InventoryItemCopyWithImpl<$Res>
+    implements $InventoryItemCopyWith<$Res> {
+  _$InventoryItemCopyWithImpl(this._self, this._then);
+
+  final InventoryItem _self;
+  final $Res Function(InventoryItem) _then;
+
+/// Create a copy of InventoryItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? orderId = null,Object? purchasedAt = null,Object? line = null,}) {
+  return _then(_self.copyWith(
+orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as String,purchasedAt: null == purchasedAt ? _self.purchasedAt : purchasedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,line: null == line ? _self.line : line // ignore: cast_nullable_to_non_nullable
+as PurchaseLine,
+  ));
+}
+/// Create a copy of InventoryItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PurchaseLineCopyWith<$Res> get line {
+  
+  return $PurchaseLineCopyWith<$Res>(_self.line, (value) {
+    return _then(_self.copyWith(line: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [InventoryItem].
+extension InventoryItemPatterns on InventoryItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _InventoryItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _InventoryItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _InventoryItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _InventoryItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _InventoryItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _InventoryItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String orderId,  DateTime purchasedAt,  PurchaseLine line)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _InventoryItem() when $default != null:
+return $default(_that.orderId,_that.purchasedAt,_that.line);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String orderId,  DateTime purchasedAt,  PurchaseLine line)  $default,) {final _that = this;
+switch (_that) {
+case _InventoryItem():
+return $default(_that.orderId,_that.purchasedAt,_that.line);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String orderId,  DateTime purchasedAt,  PurchaseLine line)?  $default,) {final _that = this;
+switch (_that) {
+case _InventoryItem() when $default != null:
+return $default(_that.orderId,_that.purchasedAt,_that.line);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _InventoryItem extends InventoryItem {
+  const _InventoryItem({required this.orderId, required this.purchasedAt, required this.line}): super._();
+  
+
+@override final  String orderId;
+@override final  DateTime purchasedAt;
+@override final  PurchaseLine line;
+
+/// Create a copy of InventoryItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$InventoryItemCopyWith<_InventoryItem> get copyWith => __$InventoryItemCopyWithImpl<_InventoryItem>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryItem&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.purchasedAt, purchasedAt) || other.purchasedAt == purchasedAt)&&(identical(other.line, line) || other.line == line));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,orderId,purchasedAt,line);
+
+@override
+String toString() {
+  return 'InventoryItem(orderId: $orderId, purchasedAt: $purchasedAt, line: $line)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$InventoryItemCopyWith<$Res> implements $InventoryItemCopyWith<$Res> {
+  factory _$InventoryItemCopyWith(_InventoryItem value, $Res Function(_InventoryItem) _then) = __$InventoryItemCopyWithImpl;
+@override @useResult
+$Res call({
+ String orderId, DateTime purchasedAt, PurchaseLine line
+});
+
+
+@override $PurchaseLineCopyWith<$Res> get line;
+
+}
+/// @nodoc
+class __$InventoryItemCopyWithImpl<$Res>
+    implements _$InventoryItemCopyWith<$Res> {
+  __$InventoryItemCopyWithImpl(this._self, this._then);
+
+  final _InventoryItem _self;
+  final $Res Function(_InventoryItem) _then;
+
+/// Create a copy of InventoryItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? orderId = null,Object? purchasedAt = null,Object? line = null,}) {
+  return _then(_InventoryItem(
+orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as String,purchasedAt: null == purchasedAt ? _self.purchasedAt : purchasedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,line: null == line ? _self.line : line // ignore: cast_nullable_to_non_nullable
+as PurchaseLine,
+  ));
+}
+
+/// Create a copy of InventoryItem
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PurchaseLineCopyWith<$Res> get line {
+  
+  return $PurchaseLineCopyWith<$Res>(_self.line, (value) {
+    return _then(_self.copyWith(line: value));
+  });
+}
 }
 
 // dart format on

@@ -28,6 +28,7 @@ class PlayerPurchaseRecorder implements PurchaseRecorder {
                 unitPrice: l.unitPrice,
                 quantity: l.quantity,
                 isSuperOffer: l.isSuperOffer,
+                categoryId: l.categoryId,
               ),
             )
             .toList(),

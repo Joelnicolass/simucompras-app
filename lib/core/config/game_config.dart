@@ -5,6 +5,36 @@ abstract final class GameConfig {
   // --- Wallet ---
   static const int initialBalancePesos = 1_000_000;
   static const int dailyTopUpPesos = 50_000;
+  static const int dailyTopUpPerLevel = 5_000;
+
+  // --- Reventa (Mis compras) ---
+  static const double resaleMinRatio = 0.70;
+  static const double resaleMaxRatio = 0.90;
+
+  /// Pesos de reventa estables por [productId] (70–90% del precio pagado).
+  static int resalePesosFor(String productId, double unitPrice) {
+    final hash = productId.hashCode.abs();
+    final t = (hash % 1001) / 1000.0; // 0..1
+    final ratio = resaleMinRatio + (resaleMaxRatio - resaleMinRatio) * t;
+    final raw = unitPrice * ratio;
+    return raw.round().clamp(1, unitPrice.ceil());
+  }
+
+  // --- Nivel / XP ---
+  static const int xpPerLevel = 100;
+  static const int xpPerPurchase = 25;
+  static const int xpPerMissionClaim = 40;
+  static const int xpPerSale = 0;
+  static const int levelUpBonusPesos = 30_000;
+
+  static int levelForXp(int xp) => 1 + (xp.clamp(0, 1 << 30) ~/ xpPerLevel);
+
+  static int xpIntoCurrentLevel(int xp) => xp.clamp(0, 1 << 30) % xpPerLevel;
+
+  // --- Desafío semanal ---
+  static const int weeklyRewardLo = 80_000;
+  static const int weeklyRewardMid = 120_000;
+  static const int weeklyRewardHi = 150_000;
 
   // --- Precios simulados (sin buy box MeLi) ---
   static const double priceMin = 10_000;

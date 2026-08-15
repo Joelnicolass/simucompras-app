@@ -16,6 +16,7 @@ class PurchaseRecorderLine {
     required this.unitPrice,
     required this.quantity,
     this.isSuperOffer = false,
+    this.categoryId,
   });
 
   final String productId;
@@ -24,4 +25,5 @@ class PurchaseRecorderLine {
   final double unitPrice;
   final int quantity;
   final bool isSuperOffer;
+  final String? categoryId;
 }

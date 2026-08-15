@@ -38,6 +38,7 @@ class Checkout {
               unitPrice: l.unitPrice,
               quantity: l.quantity,
               isSuperOffer: l.isSuperOffer,
+              categoryId: l.categoryId,
             ),
           )
           .toList(),

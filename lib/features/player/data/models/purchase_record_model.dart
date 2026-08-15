@@ -12,6 +12,8 @@ abstract class PurchaseLineModel with _$PurchaseLineModel {
     required double unitPrice,
     required int quantity,
     @Default(false) bool isSuperOffer,
+    String? categoryId,
+    @Default(0) int soldQuantity,
   }) = _PurchaseLineModel;
 
   factory PurchaseLineModel.fromJson(Map<String, dynamic> json) =>

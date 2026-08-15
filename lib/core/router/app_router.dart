@@ -11,15 +11,16 @@ import '../../features/catalog/presentation/views/product_detail_view.dart';
 import '../../features/catalog/presentation/views/search_view.dart';
 import '../../features/home/presentation/components/home_bottom_nav.dart';
 import '../../features/home/presentation/views/home_view.dart';
-import '../../features/home/presentation/views/notifications_stub_view.dart';
 import '../../features/player/presentation/views/favorites_view.dart';
+import '../../features/player/presentation/views/my_purchases_view.dart';
 import '../../features/player/presentation/views/profile_view.dart';
 import '../../shared/components/app_page_transitions.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(debugLabel: 'home');
 final _shellNavigatorFavKey = GlobalKey<NavigatorState>(debugLabel: 'fav');
-final _shellNavigatorNotifKey = GlobalKey<NavigatorState>(debugLabel: 'notif');
+final _shellNavigatorPurchasesKey =
+    GlobalKey<NavigatorState>(debugLabel: 'purchases');
 final _shellNavigatorProfileKey =
     GlobalKey<NavigatorState>(debugLabel: 'profile');
 
@@ -27,7 +28,7 @@ final _shellNavigatorProfileKey =
 final _rootHeroine = HeroineController();
 final _homeHeroine = HeroineController();
 final _favHeroine = HeroineController();
-final _notifHeroine = HeroineController();
+final _purchasesHeroine = HeroineController();
 final _profileHeroine = HeroineController();
 
 final appRouter = GoRouter(
@@ -70,12 +71,12 @@ final appRouter = GoRouter(
           ],
         ),
         StatefulShellBranch(
-          navigatorKey: _shellNavigatorNotifKey,
-          observers: [_notifHeroine],
+          navigatorKey: _shellNavigatorPurchasesKey,
+          observers: [_purchasesHeroine],
           routes: [
             GoRoute(
-              path: '/notifications',
-              builder: (context, state) => const NotificationsStubView(),
+              path: '/purchases',
+              builder: (context, state) => const MyPurchasesView(),
             ),
           ],
         ),

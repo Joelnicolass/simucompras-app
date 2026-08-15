@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PurchaseLineModel {
 
- String get productId; String get title; String? get thumbnailUrl; double get unitPrice; int get quantity; bool get isSuperOffer;
+ String get productId; String get title; String? get thumbnailUrl; double get unitPrice; int get quantity; bool get isSuperOffer; String? get categoryId; int get soldQuantity;
 /// Create a copy of PurchaseLineModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PurchaseLineModelCopyWith<PurchaseLineModel> get copyWith => _$PurchaseLineMode
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseLineModel&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseLineModel&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.soldQuantity, soldQuantity) || other.soldQuantity == soldQuantity));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer);
+int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer,categoryId,soldQuantity);
 
 @override
 String toString() {
-  return 'PurchaseLineModel(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer)';
+  return 'PurchaseLineModel(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer, categoryId: $categoryId, soldQuantity: $soldQuantity)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PurchaseLineModelCopyWith<$Res>  {
   factory $PurchaseLineModelCopyWith(PurchaseLineModel value, $Res Function(PurchaseLineModel) _then) = _$PurchaseLineModelCopyWithImpl;
 @useResult
 $Res call({
- String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer
+ String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer, String? categoryId, int soldQuantity
 });
 
 
@@ -65,7 +65,7 @@ class _$PurchaseLineModelCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseLineModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,Object? categoryId = freezed,Object? soldQuantity = null,}) {
   return _then(_self.copyWith(
 productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,9 @@ as String,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnail
 as String?,unitPrice: null == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
 as double,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as int,isSuperOffer: null == isSuperOffer ? _self.isSuperOffer : isSuperOffer // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,soldQuantity: null == soldQuantity ? _self.soldQuantity : soldQuantity // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -158,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer,  String? categoryId,  int soldQuantity)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PurchaseLineModel() when $default != null:
-return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer);case _:
+return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer,_that.categoryId,_that.soldQuantity);case _:
   return orElse();
 
 }
@@ -179,10 +181,10 @@ return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer,  String? categoryId,  int soldQuantity)  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseLineModel():
-return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer);case _:
+return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer,_that.categoryId,_that.soldQuantity);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +201,10 @@ return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String productId,  String title,  String? thumbnailUrl,  double unitPrice,  int quantity,  bool isSuperOffer,  String? categoryId,  int soldQuantity)?  $default,) {final _that = this;
 switch (_that) {
 case _PurchaseLineModel() when $default != null:
-return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer);case _:
+return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_that.quantity,_that.isSuperOffer,_that.categoryId,_that.soldQuantity);case _:
   return null;
 
 }
@@ -214,7 +216,7 @@ return $default(_that.productId,_that.title,_that.thumbnailUrl,_that.unitPrice,_
 @JsonSerializable()
 
 class _PurchaseLineModel implements PurchaseLineModel {
-  const _PurchaseLineModel({required this.productId, required this.title, this.thumbnailUrl, required this.unitPrice, required this.quantity, this.isSuperOffer = false});
+  const _PurchaseLineModel({required this.productId, required this.title, this.thumbnailUrl, required this.unitPrice, required this.quantity, this.isSuperOffer = false, this.categoryId, this.soldQuantity = 0});
   factory _PurchaseLineModel.fromJson(Map<String, dynamic> json) => _$PurchaseLineModelFromJson(json);
 
 @override final  String productId;
@@ -223,6 +225,8 @@ class _PurchaseLineModel implements PurchaseLineModel {
 @override final  double unitPrice;
 @override final  int quantity;
 @override@JsonKey() final  bool isSuperOffer;
+@override final  String? categoryId;
+@override@JsonKey() final  int soldQuantity;
 
 /// Create a copy of PurchaseLineModel
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseLineModel&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PurchaseLineModel&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.title, title) || other.title == title)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.unitPrice, unitPrice) || other.unitPrice == unitPrice)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.isSuperOffer, isSuperOffer) || other.isSuperOffer == isSuperOffer)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.soldQuantity, soldQuantity) || other.soldQuantity == soldQuantity));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer);
+int get hashCode => Object.hash(runtimeType,productId,title,thumbnailUrl,unitPrice,quantity,isSuperOffer,categoryId,soldQuantity);
 
 @override
 String toString() {
-  return 'PurchaseLineModel(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer)';
+  return 'PurchaseLineModel(productId: $productId, title: $title, thumbnailUrl: $thumbnailUrl, unitPrice: $unitPrice, quantity: $quantity, isSuperOffer: $isSuperOffer, categoryId: $categoryId, soldQuantity: $soldQuantity)';
 }
 
 
@@ -257,7 +261,7 @@ abstract mixin class _$PurchaseLineModelCopyWith<$Res> implements $PurchaseLineM
   factory _$PurchaseLineModelCopyWith(_PurchaseLineModel value, $Res Function(_PurchaseLineModel) _then) = __$PurchaseLineModelCopyWithImpl;
 @override @useResult
 $Res call({
- String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer
+ String productId, String title, String? thumbnailUrl, double unitPrice, int quantity, bool isSuperOffer, String? categoryId, int soldQuantity
 });
 
 
@@ -274,7 +278,7 @@ class __$PurchaseLineModelCopyWithImpl<$Res>
 
 /// Create a copy of PurchaseLineModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? productId = null,Object? title = null,Object? thumbnailUrl = freezed,Object? unitPrice = null,Object? quantity = null,Object? isSuperOffer = null,Object? categoryId = freezed,Object? soldQuantity = null,}) {
   return _then(_PurchaseLineModel(
 productId: null == productId ? _self.productId : productId // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -282,7 +286,9 @@ as String,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnail
 as String?,unitPrice: null == unitPrice ? _self.unitPrice : unitPrice // ignore: cast_nullable_to_non_nullable
 as double,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as int,isSuperOffer: null == isSuperOffer ? _self.isSuperOffer : isSuperOffer // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,soldQuantity: null == soldQuantity ? _self.soldQuantity : soldQuantity // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

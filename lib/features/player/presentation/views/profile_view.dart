@@ -11,8 +11,10 @@ import '../../../../shared/components/error_retry.dart';
 import '../../../../shared/components/search_history_pill.dart';
 import '../../../../shared/utils/price_format.dart';
 import '../../../missions/presentation/components/mission_card.dart';
+import '../../../missions/presentation/components/weekly_challenge_card.dart';
 import '../../../missions/presentation/providers/missions_provider.dart';
-import '../providers/purchase_history_provider.dart';
+import '../../../missions/presentation/providers/weekly_challenge_provider.dart';
+import '../providers/player_progress_provider.dart';
 import '../providers/search_history_provider.dart';
 import '../providers/wallet_provider.dart';
 
@@ -40,8 +42,10 @@ class ProfileView extends ConsumerWidget {
           children: [
             _WalletCreditCard(balance: w.balancePesos),
             const SizedBox(height: 8),
+            const _LevelSection(),
+            const SizedBox(height: 8),
             Text(
-              'Recarga diaria: +${PriceFormat.ars(GameConfig.dailyTopUpPesos.toDouble())}',
+              'Recarga diaria: +${PriceFormat.ars(GameConfig.dailyTopUpPesos.toDouble())} (+${PriceFormat.ars(GameConfig.dailyTopUpPerLevel.toDouble())}/nivel)',
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 12,
@@ -49,11 +53,13 @@ class ProfileView extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 20),
+            const _WeeklySection(),
+            const SizedBox(height: 20),
             const _MissionsSection(),
             const SizedBox(height: 20),
             const _RecentSearchesSection(),
             const SizedBox(height: 20),
-            const _PurchaseHistorySection(),
+            const _PurchasesCta(),
           ],
         ),
         loading: () => const AppLoader(message: 'Cargando cuenta…'),
@@ -73,8 +79,6 @@ class _WalletCreditCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // u_credit_card renderiza a 300px fijos (scale vía width); no envolver
-    // en un SizedBox más ancho o queda alineada a la izquierda.
     return Column(
       children: [
         Center(
@@ -115,6 +119,104 @@ class _WalletCreditCard extends StatelessWidget {
             fontWeight: FontWeight.w500,
             color: MeliColors.textSecondary,
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LevelSection extends ConsumerWidget {
+  const _LevelSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final progress = ref.watch(playerLevelProvider);
+
+    return progress.when(
+      data: (p) {
+        final level = GameConfig.levelForXp(p.xp);
+        final into = GameConfig.xpIntoCurrentLevel(p.xp);
+        final ratio = into / GameConfig.xpPerLevel;
+        return Container(
+          padding: const EdgeInsets.all(14),
+          decoration: const BoxDecoration(
+            color: MeliColors.surface,
+            borderRadius: MeliRadii.cardAll,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Nivel $level',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '$into / ${GameConfig.xpPerLevel} XP',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: MeliColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: ratio,
+                  minHeight: 8,
+                  backgroundColor: MeliColors.divider,
+                  color: MeliColors.action,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Subís de nivel y sumás +${PriceFormat.ars(GameConfig.levelUpBonusPesos.toDouble())}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: MeliColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      loading: () => const LinearProgressIndicator(),
+      error: (e, _) => Text(e.toString()),
+    );
+  }
+}
+
+class _WeeklySection extends ConsumerWidget {
+  const _WeeklySection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weekly = ref.watch(weeklyChallengeControllerProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Desafío de la semana',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Meta más grande, premio más alto',
+          style: TextStyle(fontSize: 13, color: MeliColors.textSecondary),
+        ),
+        const SizedBox(height: 12),
+        weekly.when(
+          data: (c) => WeeklyChallengeCard(challenge: c),
+          loading: () => const LinearProgressIndicator(),
+          error: (e, _) => Text(e.toString()),
         ),
       ],
     );
@@ -209,78 +311,50 @@ class _RecentSearchesSection extends ConsumerWidget {
   }
 }
 
-class _PurchaseHistorySection extends ConsumerWidget {
-  const _PurchaseHistorySection();
+class _PurchasesCta extends StatelessWidget {
+  const _PurchasesCta();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final history = ref.watch(purchaseHistoryProvider);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Compras',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 8),
-        history.when(
-          data: (records) {
-            if (records.isEmpty) {
-              return const Text(
-                'Aún no hiciste compras.',
-                style: TextStyle(color: MeliColors.textSecondary),
-              );
-            }
-            return Column(
-              children: [
-                for (final r in records.take(10))
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: MeliColors.surface,
-                      borderRadius: BorderRadius.circular(MeliRadii.card),
+  Widget build(BuildContext context) {
+    return Material(
+      color: MeliColors.surface,
+      borderRadius: MeliRadii.cardAll,
+      child: InkWell(
+        borderRadius: MeliRadii.cardAll,
+        onTap: () => context.go('/purchases'),
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.shopping_bag_outlined, color: MeliColors.action),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Mis compras',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                r.lines.map((l) => l.title).join(', '),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${r.purchasedAt.day}/${r.purchasedAt.month}/${r.purchasedAt.year}',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: MeliColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          PriceFormat.ars(r.totalPesos.toDouble()),
-                          style: const TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                      ],
+                    SizedBox(height: 2),
+                    Text(
+                      'Revendé lo que compraste y recuperá saldo',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: MeliColors.textSecondary,
+                      ),
                     ),
-                  ),
-              ],
-            );
-          },
-          loading: () => const LinearProgressIndicator(),
-          error: (e, _) => Text(e.toString()),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: MeliColors.navInactive),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }

@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../domain/datasources/player_local_datasource.dart';
+import '../../domain/entities/player_progress.dart';
 import '../../domain/entities/player_wallet.dart';
 import '../../domain/entities/purchase_record.dart';
 import '../../domain/entities/search_history_entry.dart';
 import '../mappers/player_mappers.dart';
+import '../models/player_progress_model.dart';
 import '../models/player_wallet_model.dart';
 import '../models/purchase_record_model.dart';
 import '../models/search_history_entry_model.dart';
@@ -20,6 +22,7 @@ class PlayerLocalDatasourceImpl implements PlayerLocalDatasource {
   static const _searchesKey = 'player_search_history';
   static const _purchasesKey = 'player_purchase_history';
   static const _favoritesKey = 'player_favorite_ids';
+  static const _progressKey = 'player_progress';
 
   @override
   Future<PlayerWallet?> readWallet() async {
@@ -100,5 +103,26 @@ class PlayerLocalDatasourceImpl implements PlayerLocalDatasource {
   @override
   Future<void> saveFavoriteIds(List<String> ids) async {
     await _prefs.setStringList(_favoritesKey, ids);
+  }
+
+  @override
+  Future<PlayerProgress?> readProgress() async {
+    final raw = _prefs.getString(_progressKey);
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      final json = jsonDecode(raw) as Map<String, dynamic>;
+      return PlayerProgressModel.fromJson(json).toEntity();
+    } catch (_) {
+      await _prefs.remove(_progressKey);
+      return null;
+    }
+  }
+
+  @override
+  Future<void> saveProgress(PlayerProgress progress) async {
+    await _prefs.setString(
+      _progressKey,
+      jsonEncode(progress.toModel().toJson()),
+    );
   }
 }

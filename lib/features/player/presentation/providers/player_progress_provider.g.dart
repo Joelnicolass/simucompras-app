@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'cart_provider.dart';
+part of 'player_progress_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,43 +9,43 @@ part of 'cart_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(CartController)
-final cartControllerProvider = CartControllerProvider._();
+@ProviderFor(PlayerLevel)
+final playerLevelProvider = PlayerLevelProvider._();
 
-final class CartControllerProvider
-    extends $AsyncNotifierProvider<CartController, Cart> {
-  CartControllerProvider._()
+final class PlayerLevelProvider
+    extends $AsyncNotifierProvider<PlayerLevel, PlayerProgress> {
+  PlayerLevelProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'cartControllerProvider',
+        name: r'playerLevelProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$cartControllerHash();
+  String debugGetCreateSourceHash() => _$playerLevelHash();
 
   @$internal
   @override
-  CartController create() => CartController();
+  PlayerLevel create() => PlayerLevel();
 }
 
-String _$cartControllerHash() => r'd051d4cb965dfa951019ef8eb8b144d2679982a4';
+String _$playerLevelHash() => r'1ef62974fcbd37d4f4790b023550519581212685';
 
-abstract class _$CartController extends $AsyncNotifier<Cart> {
-  FutureOr<Cart> build();
+abstract class _$PlayerLevel extends $AsyncNotifier<PlayerProgress> {
+  FutureOr<PlayerProgress> build();
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<Cart>, Cart>;
+    final ref = this.ref as $Ref<AsyncValue<PlayerProgress>, PlayerProgress>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<Cart>, Cart>,
-              AsyncValue<Cart>,
+              AnyNotifier<AsyncValue<PlayerProgress>, PlayerProgress>,
+              AsyncValue<PlayerProgress>,
               Object?,
               Object?
             >;

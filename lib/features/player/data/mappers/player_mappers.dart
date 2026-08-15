@@ -1,6 +1,8 @@
+import '../../domain/entities/player_progress.dart';
 import '../../domain/entities/player_wallet.dart';
 import '../../domain/entities/purchase_record.dart';
 import '../../domain/entities/search_history_entry.dart';
+import '../models/player_progress_model.dart';
 import '../models/player_wallet_model.dart';
 import '../models/purchase_record_model.dart';
 import '../models/search_history_entry_model.dart';
@@ -37,6 +39,8 @@ extension PurchaseLineModelMapper on PurchaseLineModel {
     unitPrice: unitPrice,
     quantity: quantity,
     isSuperOffer: isSuperOffer,
+    categoryId: categoryId,
+    soldQuantity: soldQuantity,
   );
 }
 
@@ -48,6 +52,8 @@ extension PurchaseLineEntityMapper on PurchaseLine {
     unitPrice: unitPrice,
     quantity: quantity,
     isSuperOffer: isSuperOffer,
+    categoryId: categoryId,
+    soldQuantity: soldQuantity,
   );
 }
 
@@ -67,4 +73,12 @@ extension PurchaseRecordEntityMapper on PurchaseRecord {
     totalPesos: totalPesos,
     lines: lines.map((l) => l.toModel()).toList(),
   );
+}
+
+extension PlayerProgressModelMapper on PlayerProgressModel {
+  PlayerProgress toEntity() => PlayerProgress(xp: xp);
+}
+
+extension PlayerProgressEntityMapper on PlayerProgress {
+  PlayerProgressModel toModel() => PlayerProgressModel(xp: xp);
 }
