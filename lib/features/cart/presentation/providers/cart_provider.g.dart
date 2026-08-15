@@ -33,7 +33,7 @@ final class CartControllerProvider
   CartController create() => CartController();
 }
 
-String _$cartControllerHash() => r'dae0a70c621cd0684ac393c283c7e0c9bfc4b3a2';
+String _$cartControllerHash() => r'862e63b66e6dcb2c7198360a9df2ae1eaec628fc';
 
 abstract class _$CartController extends $AsyncNotifier<Cart> {
   FutureOr<Cart> build();

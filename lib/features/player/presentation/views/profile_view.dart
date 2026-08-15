@@ -5,6 +5,7 @@ import 'package:u_credit_card/u_credit_card.dart';
 
 import '../../../../core/config/game_config.dart';
 import '../../../../core/theme/meli_colors.dart';
+import '../../../../core/theme/meli_radii.dart';
 import '../../../../shared/components/app_loader.dart';
 import '../../../../shared/components/error_retry.dart';
 import '../../../../shared/components/search_history_pill.dart';
@@ -72,26 +73,50 @@ class _WalletCreditCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CreditCardUi(
-        width: MediaQuery.sizeOf(context).width - 32,
-        cardHolderFullName: 'Simu Comprador',
-        cardNumber: '5412750000003483',
-        validFrom: '01/26',
-        validThru: '12/30',
-        topLeftColor: MeliColors.action,
-        bottomRightColor: const Color(0xFF1B4F9C),
-        cardType: CardType.debit,
-        creditCardType: CreditCardType.mastercard,
-        doesSupportNfc: true,
-        showBalance: true,
-        balance: balance.toDouble(),
-        currencySymbol: r'$',
-        autoHideBalance: false,
-        enableFlipping: true,
-        cvvNumber: '123',
-        shouldMaskCardNumber: true,
-      ),
+    // u_credit_card renderiza a 300px fijos (scale vía width); no envolver
+    // en un SizedBox más ancho o queda alineada a la izquierda.
+    return Column(
+      children: [
+        Center(
+          child: CreditCardUi(
+            width: MediaQuery.sizeOf(context).width - 32,
+            cardHolderFullName: 'Simu Comprador',
+            cardNumber: '5412750000003483',
+            validFrom: '01/26',
+            validThru: '12/30',
+            topLeftColor: MeliColors.action,
+            bottomRightColor: const Color(0xFF1B4F9C),
+            cardType: CardType.debit,
+            creditCardType: CreditCardType.mastercard,
+            doesSupportNfc: true,
+            showBalance: false,
+            autoHideBalance: false,
+            enableFlipping: true,
+            cvvNumber: '123',
+            shouldMaskCardNumber: true,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Text(
+          PriceFormat.ars(balance.toDouble()),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 2),
+        const Text(
+          'Disponible',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: MeliColors.textSecondary,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -215,7 +240,7 @@ class _PurchaseHistorySection extends ConsumerWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: MeliColors.surface,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(MeliRadii.card),
                     ),
                     child: Row(
                       children: [

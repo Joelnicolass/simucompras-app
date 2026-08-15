@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/meli_colors.dart';
+import '../../../../core/theme/meli_radii.dart';
 import '../../../../shared/utils/price_format.dart';
 import '../../domain/entities/mission.dart';
 
@@ -18,7 +19,7 @@ class MissionCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: MeliRadii.cardAll,
         gradient: LinearGradient(
           colors: [
             tint.withValues(alpha: 0.18),
@@ -48,7 +49,7 @@ class MissionCard extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: accent.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(MeliRadii.md),
               ),
               child: Icon(icon, color: accent),
             ),
@@ -93,7 +94,7 @@ class MissionCard extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: MeliColors.success.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(MeliRadii.pill),
                     ),
                     child: Text(
                       '+${PriceFormat.ars(mission.rewardPesos.toDouble())}',

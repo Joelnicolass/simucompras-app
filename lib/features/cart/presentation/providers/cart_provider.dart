@@ -1,18 +1,20 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../missions/domain/entities/mission.dart';
+import '../../../missions/domain/usecases/claim_mission_rewards.dart';
+import '../../../missions/domain/usecases/evaluate_missions.dart';
+import '../../../missions/domain/usecases/get_active_missions.dart';
+import '../../../missions/presentation/providers/missions_provider.dart';
+import '../../../player/presentation/providers/purchase_history_provider.dart';
+import '../../../player/presentation/providers/wallet_provider.dart';
 import '../../domain/entities/cart.dart';
+import '../../domain/entities/checkout_outcome.dart';
 import '../../domain/usecases/add_to_cart.dart';
 import '../../domain/usecases/checkout.dart';
 import '../../domain/usecases/get_cart.dart';
 import '../../domain/usecases/remove_from_cart.dart';
 import '../../domain/usecases/update_line_qty.dart';
-import '../../../missions/domain/entities/mission.dart';
-import '../../../missions/domain/usecases/claim_mission_rewards.dart';
-import '../../../missions/domain/usecases/evaluate_missions.dart';
-import '../../../missions/presentation/providers/missions_provider.dart';
-import '../../../player/presentation/providers/purchase_history_provider.dart';
-import '../../../player/presentation/providers/wallet_provider.dart';
 
 part 'cart_provider.g.dart';
 
@@ -38,10 +40,9 @@ class CartController extends _$CartController {
     state = AsyncData(cart);
   }
 
-  Future<CheckoutResult> checkout() async {
+  Future<CheckoutOutcome> checkout() async {
     final result = await getIt<Checkout>()();
     state = const AsyncData(Cart());
-    ref.invalidate(walletProvider);
     ref.invalidate(purchaseHistoryProvider);
 
     final events = result.lines
@@ -58,9 +59,12 @@ class CartController extends _$CartController {
         )
         .toList();
     await getIt<EvaluateMissions>()(events);
-    await getIt<ClaimMissionRewards>()();
+    final claimed = await getIt<ClaimMissionRewards>()();
+    // Rellena slots y refresca saldo (incluye recompensas).
+    await getIt<GetActiveMissions>()();
     ref.invalidate(missionsProvider);
+    ref.invalidate(walletProvider);
 
-    return result;
+    return CheckoutOutcome(result: result, claimedMissions: claimed);
   }
 }

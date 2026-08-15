@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:heroine/heroine.dart';
 
+/// Tope de duración para transiciones / efectos de paso.
+const Duration kAppMotionMax = Duration(milliseconds: 350);
+
 /// Tags estables para transiciones heroine (producto, etc.).
 abstract final class AppHeroTags {
   static String productImage(String productId) => 'product-image-$productId';
@@ -27,6 +30,8 @@ class AppHero extends StatelessWidget {
 
     return Heroine(
       tag: tag,
+      // Curva acotada (≤400ms): el spring default se siente lento.
+      motion: const CurvedMotion(kAppMotionMax, Curves.easeOutCubic),
       flightShuttleBuilder: const FadeShuttleBuilder(),
       child: child,
     );
@@ -49,10 +54,14 @@ class AppDragDismiss extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (onDismiss == null) {
-      return DragDismissable(child: child);
+      return DragDismissable(
+        motion: const CurvedMotion(kAppMotionMax, Curves.easeOutCubic),
+        child: child,
+      );
     }
     return DragDismissable.custom(
       onDismiss: onDismiss,
+      motion: const CurvedMotion(kAppMotionMax, Curves.easeOutCubic),
       child: child,
     );
   }

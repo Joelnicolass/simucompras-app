@@ -11,7 +11,7 @@ class AppPageTransitions {
   static CustomTransitionPage<T> softFadeSlide<T>({
     required LocalKey key,
     required Widget child,
-    Duration duration = const Duration(milliseconds: 320),
+    Duration duration = const Duration(milliseconds: 280),
   }) {
     return CustomTransitionPage<T>(
       key: key,

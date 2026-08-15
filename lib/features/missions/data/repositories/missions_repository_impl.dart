@@ -3,6 +3,7 @@ import '../../domain/datasources/missions_local_datasource.dart';
 import '../../domain/entities/mission.dart';
 import '../../domain/errors/missions_failure.dart';
 import '../../domain/repositories/missions_repository.dart';
+import '../mission_catalog.dart';
 
 class MissionsRepositoryImpl implements MissionsRepository {
   MissionsRepositoryImpl(this._local);
@@ -38,7 +39,12 @@ class MissionsRepositoryImpl implements MissionsRepository {
 
       final stamp = (now ?? DateTime.now()).millisecondsSinceEpoch;
       final needed = GameConfig.activeMissionSlots - open.length;
-      final fresh = _defaultMissions(stamp).take(needed).toList();
+      final excludeTitles = open.map((m) => m.title).toSet();
+      final fresh = MissionCatalog.pick(
+        stamp: stamp,
+        count: needed,
+        excludeTitles: excludeTitles,
+      );
       final seeded = [...open, ...fresh];
 
       // No retenemos claimed: ya cobradas; libera slots limpios.
@@ -56,16 +62,16 @@ class MissionsRepositoryImpl implements MissionsRepository {
     try {
       await ensureSeeded();
       final all = await _local.readMissions();
+      final newlyCompleted = <Mission>[];
       final updated = all.map((mission) {
         if (mission.status != MissionStatus.active) return mission;
-        return _matches(mission, events)
-            ? _withStatus(mission, MissionStatus.completed)
-            : mission;
+        if (!_matches(mission, events)) return mission;
+        final done = _withStatus(mission, MissionStatus.completed);
+        newlyCompleted.add(done);
+        return done;
       }).toList();
       await _local.saveMissions(updated);
-      return updated
-          .where((m) => m.status == MissionStatus.completed)
-          .toList();
+      return newlyCompleted;
     } catch (e) {
       throw MissionsStorageUnavailable(e);
     }
@@ -86,7 +92,10 @@ class MissionsRepositoryImpl implements MissionsRepository {
         }
         return m;
       }).toList();
-      await _local.saveMissions(updated);
+      // Solo persistimos no-claimed; ensureSeeded llenará slots.
+      final remaining =
+          updated.where((m) => m.status != MissionStatus.claimed).toList();
+      await _local.saveMissions(remaining);
       return toClaim;
     } catch (e) {
       throw MissionsStorageUnavailable(e);
@@ -125,39 +134,4 @@ class MissionsRepositoryImpl implements MissionsRepository {
       BuyKeywordMission() => mission.copyWith(status: status),
     };
   }
-
-  /// Catálogo seed de objetivos. **Acá se agregan misiones nuevas**
-  /// (no en el datasource: ese solo persiste JSON).
-  ///
-  /// Se invoca desde [ensureSeeded] cuando faltan slots activos.
-  List<Mission> _defaultMissions(int stamp) => [
-    Mission.findSuperOffer(
-      id: 'mission_super_offer_$stamp',
-      title: 'Cazador de ofertas',
-      description: 'Comprá un producto con súper oferta.',
-      rewardPesos: GameConfig.missionRewardPesos,
-    ),
-    Mission.buyExpensive(
-      id: 'mission_expensive_$stamp',
-      minPrice: GameConfig.missionBuyExpensiveMin,
-      title: 'Gran compra',
-      description:
-          'Comprá algo de al menos \$${GameConfig.missionBuyExpensiveMin}.',
-      rewardPesos: GameConfig.missionRewardPesos,
-    ),
-    Mission.buyCheapDeal(
-      id: 'mission_cheap_deal_$stamp',
-      minDiscount: GameConfig.missionCheapDealMinDiscount,
-      title: 'Remate',
-      description: 'Comprá un producto con descuento fuerte.',
-      rewardPesos: GameConfig.missionRewardPesos,
-    ),
-    Mission.buyKeyword(
-      id: 'mission_keyword_tv_$stamp',
-      keyword: 'tv',
-      title: 'Noche de series',
-      description: 'Comprá un producto relacionado a TV.',
-      rewardPesos: GameConfig.missionRewardPesos,
-    ),
-  ];
 }

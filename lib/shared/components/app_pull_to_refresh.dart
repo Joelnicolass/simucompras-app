@@ -39,7 +39,9 @@ class AppPullToRefresh extends StatelessWidget {
       backgroundColor: backgroundColor,
       showChildOpacityTransition: showChildOpacityTransition,
       height: height + topInset,
-      animSpeedFactor: 1.5,
+      // Base 400ms: la lib usa este valor en el settle/regreso (sin divisor).
+      springAnimationDurationInMilliseconds: 400,
+      animSpeedFactor: 1.0,
       child: child,
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/meli_colors.dart';
+import '../../core/theme/meli_radii.dart';
 import 'app_animated_text.dart';
 import 'app_hero.dart';
 import 'network_image_box.dart';
@@ -12,7 +13,7 @@ import 'network_image_box.dart';
 /// desborda. Orden: badge oferta → título → precio anterior → precio
 /// (+ % OFF) → cuotas → envío.
 abstract final class ProductCardLayout {
-  static const double cardRadius = 8;
+  static const double cardRadius = MeliRadii.card;
 
   static const double paddingHorizontal = 10;
   static const double paddingTop = 10;

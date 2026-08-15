@@ -12,7 +12,8 @@ abstract final class GameConfig {
   static const int priceRoundTo = 1000;
 
   // --- Super oferta (modifier de juego) ---
-  static const double superOfferChance = 0.08;
+  /// ~2.5% por producto/día (antes 8%: aparecía demasiado).
+  static const double superOfferChance = 0.025;
   static const double superOfferMinDiscount = 0.40;
   static const double superOfferMaxDiscount = 0.75;
   static const int expensiveThresholdPesos = 200_000;
@@ -60,6 +61,8 @@ abstract final class GameConfig {
   // --- Misiones ---
   static const int activeMissionSlots = 3;
   static const int missionRewardPesos = 25_000;
+  static const int missionRewardPesosLo = 15_000;
+  static const int missionRewardPesosHi = 40_000;
   static const int missionBuyExpensiveMin = 300_000;
   static const double missionCheapDealMinDiscount = 0.40;
 

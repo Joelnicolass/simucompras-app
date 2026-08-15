@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/meli_colors.dart';
+import '../../../../core/theme/meli_radii.dart';
 import '../../../../shared/components/action_footer.dart';
 import '../../../../shared/components/app_animated_text.dart';
+import '../../../../shared/components/app_feedback.dart';
 import '../../../../shared/components/app_hero.dart';
 import '../../../../shared/components/cart_icon_button.dart';
 import '../../../../shared/components/error_retry.dart';
@@ -102,17 +103,7 @@ class ProductDetailView extends ConsumerWidget {
               _ProductActions(product: product)
             else
               const ActionFooter(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: SkeletonBox(height: 44, borderRadius: 8),
-                    ),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: SkeletonBox(height: 44, borderRadius: 8),
-                    ),
-                  ],
-                ),
+                child: SkeletonBox(height: 48, borderRadius: MeliRadii.button),
               ),
           ],
         ),
@@ -215,39 +206,26 @@ class _ProductActions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ActionFooter(
-      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () async {
-                await ref.read(cartControllerProvider.notifier).add(_toLine());
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Agregado al carrito'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
-                }
-              },
-              child: const Text('Agregar al carrito'),
+      child: SizedBox(
+        width: double.infinity,
+        height: 48,
+        child: FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: MeliColors.action,
+            foregroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: MeliRadii.buttonAll,
             ),
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: MeliColors.action,
-              ),
-              onPressed: () async {
-                await ref.read(cartControllerProvider.notifier).add(_toLine());
-                if (context.mounted) context.push('/checkout');
-              },
-              child: const Text('Comprar ahora'),
-            ),
+          onPressed: () async {
+            await ref.read(cartControllerProvider.notifier).add(_toLine());
+            if (context.mounted) AppFeedback.addedToCart(context);
+          },
+          child: const Text(
+            'Agregar al carrito',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
-        ],
+        ),
       ),
     );
   }
