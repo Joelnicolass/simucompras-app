@@ -1,5 +1,6 @@
 import '../../../../core/config/app_config.dart';
 import '../../../../core/network/api_exception.dart';
+import '../../../../shared/catalog/meli_category_path.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 import '../../domain/datasources/catalog_remote_datasource.dart';
 import '../../domain/entities/catalog_product.dart';
@@ -12,6 +13,9 @@ class CatalogRepositoryImpl implements CatalogRepository {
 
   final CatalogRemoteDatasource _remote;
   final AuthRepository _auth;
+
+  /// Cache leaf → root para no martillar `/categories` en una misma sesión.
+  final Map<String, String> _rootCategoryByLeaf = {};
 
   Future<String> _authorizationHeader() async {
     final token = await _auth.getAccessToken();
@@ -182,10 +186,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
   Future<List<ProductOffer>> getProductOffers(String productId) async {
     try {
       final header = await _authorizationHeader();
-      return _remote.getProductOffers(
-        authorizationHeader: header,
-        productId: productId,
-      );
+      return _safeOffers(header, productId);
     } on CatalogFailure {
       rethrow;
     } on ApiException catch (error) {
@@ -240,12 +241,48 @@ class CatalogRepositoryImpl implements CatalogRepository {
     String productId,
   ) async {
     try {
-      return await _remote.getProductOffers(
+      final offers = await _remote.getProductOffers(
         authorizationHeader: authorizationHeader,
         productId: productId,
+      );
+      return Future.wait(
+        offers.map((o) => _withRootCategory(authorizationHeader, o)),
       );
     } on ApiException {
       return const [];
     }
+  }
+
+  /// Completa [ProductOffer.rootCategoryId] usando `path_from_root`.
+  Future<ProductOffer> _withRootCategory(
+    String authorizationHeader,
+    ProductOffer offer,
+  ) async {
+    final leaf = offer.categoryId?.trim();
+    if (leaf == null || leaf.isEmpty) return offer;
+    if (offer.rootCategoryId != null) return offer;
+
+    final cached = _rootCategoryByLeaf[leaf];
+    if (cached != null) {
+      return offer.copyWith(rootCategoryId: cached);
+    }
+
+    try {
+      final category = await _remote.getCategoryById(
+        authorizationHeader: authorizationHeader,
+        categoryId: leaf,
+      );
+      final root = MeliCategoryPath.resolveRootId(
+        leafId: leaf,
+        pathFromRootIds: category.pathFromRoot.map((n) => n.id),
+      );
+      if (root != null) {
+        _rootCategoryByLeaf[leaf] = root;
+        return offer.copyWith(rootCategoryId: root);
+      }
+    } catch (_) {
+      // Sin path: dejamos solo categoryId hoja.
+    }
+    return offer;
   }
 }

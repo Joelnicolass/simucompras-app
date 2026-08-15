@@ -120,8 +120,10 @@ class MissionsRepositoryImpl implements MissionsRepository {
 
   bool _matches(Mission mission, List<MissionProgressEvent> events) {
     return switch (mission) {
+      // Las misiones guardan raíz (ej. MLA1051). El evento ya debería traer
+      // la raíz resuelta en checkout; igualdad exacta.
       BuyCategoryMission(:final categoryId) => events.any(
-        (e) => e.categoryId == categoryId,
+        (e) => e.categoryId != null && e.categoryId == categoryId,
       ),
       FindSuperOfferMission() => events.any((e) => e.isSuperOffer),
       BuyExpensiveMission(:final minPrice) => events.any(

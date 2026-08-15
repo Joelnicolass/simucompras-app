@@ -596,7 +596,9 @@ as String?,
 /// @nodoc
 mixin _$ProductOffer {
 
- String get itemId; double get price; String get currencyId; String get condition; double? get originalPrice; String? get categoryId; bool get freeShipping; int? get sellerId;
+ String get itemId; double get price; String get currencyId; String get condition; double? get originalPrice;/// Categoría hoja que devuelve MeLi en la oferta.
+ String? get categoryId;/// Categoría raíz MLA resuelta vía `path_from_root` (capa data).
+ String? get rootCategoryId; bool get freeShipping; int? get sellerId;
 /// Create a copy of ProductOffer
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -607,16 +609,16 @@ $ProductOfferCopyWith<ProductOffer> get copyWith => _$ProductOfferCopyWithImpl<P
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductOffer&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.price, price) || other.price == price)&&(identical(other.currencyId, currencyId) || other.currencyId == currencyId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.freeShipping, freeShipping) || other.freeShipping == freeShipping)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProductOffer&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.price, price) || other.price == price)&&(identical(other.currencyId, currencyId) || other.currencyId == currencyId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.rootCategoryId, rootCategoryId) || other.rootCategoryId == rootCategoryId)&&(identical(other.freeShipping, freeShipping) || other.freeShipping == freeShipping)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,itemId,price,currencyId,condition,originalPrice,categoryId,freeShipping,sellerId);
+int get hashCode => Object.hash(runtimeType,itemId,price,currencyId,condition,originalPrice,categoryId,rootCategoryId,freeShipping,sellerId);
 
 @override
 String toString() {
-  return 'ProductOffer(itemId: $itemId, price: $price, currencyId: $currencyId, condition: $condition, originalPrice: $originalPrice, categoryId: $categoryId, freeShipping: $freeShipping, sellerId: $sellerId)';
+  return 'ProductOffer(itemId: $itemId, price: $price, currencyId: $currencyId, condition: $condition, originalPrice: $originalPrice, categoryId: $categoryId, rootCategoryId: $rootCategoryId, freeShipping: $freeShipping, sellerId: $sellerId)';
 }
 
 
@@ -627,7 +629,7 @@ abstract mixin class $ProductOfferCopyWith<$Res>  {
   factory $ProductOfferCopyWith(ProductOffer value, $Res Function(ProductOffer) _then) = _$ProductOfferCopyWithImpl;
 @useResult
 $Res call({
- String itemId, double price, String currencyId, String condition, double? originalPrice, String? categoryId, bool freeShipping, int? sellerId
+ String itemId, double price, String currencyId, String condition, double? originalPrice, String? categoryId, String? rootCategoryId, bool freeShipping, int? sellerId
 });
 
 
@@ -644,7 +646,7 @@ class _$ProductOfferCopyWithImpl<$Res>
 
 /// Create a copy of ProductOffer
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? itemId = null,Object? price = null,Object? currencyId = null,Object? condition = null,Object? originalPrice = freezed,Object? categoryId = freezed,Object? freeShipping = null,Object? sellerId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? itemId = null,Object? price = null,Object? currencyId = null,Object? condition = null,Object? originalPrice = freezed,Object? categoryId = freezed,Object? rootCategoryId = freezed,Object? freeShipping = null,Object? sellerId = freezed,}) {
   return _then(_self.copyWith(
 itemId: null == itemId ? _self.itemId : itemId // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
@@ -652,6 +654,7 @@ as double,currencyId: null == currencyId ? _self.currencyId : currencyId // igno
 as String,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
 as String,originalPrice: freezed == originalPrice ? _self.originalPrice : originalPrice // ignore: cast_nullable_to_non_nullable
 as double?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,rootCategoryId: freezed == rootCategoryId ? _self.rootCategoryId : rootCategoryId // ignore: cast_nullable_to_non_nullable
 as String?,freeShipping: null == freeShipping ? _self.freeShipping : freeShipping // ignore: cast_nullable_to_non_nullable
 as bool,sellerId: freezed == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
 as int?,
@@ -739,10 +742,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String itemId,  double price,  String currencyId,  String condition,  double? originalPrice,  String? categoryId,  bool freeShipping,  int? sellerId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String itemId,  double price,  String currencyId,  String condition,  double? originalPrice,  String? categoryId,  String? rootCategoryId,  bool freeShipping,  int? sellerId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProductOffer() when $default != null:
-return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.originalPrice,_that.categoryId,_that.freeShipping,_that.sellerId);case _:
+return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.originalPrice,_that.categoryId,_that.rootCategoryId,_that.freeShipping,_that.sellerId);case _:
   return orElse();
 
 }
@@ -760,10 +763,10 @@ return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String itemId,  double price,  String currencyId,  String condition,  double? originalPrice,  String? categoryId,  bool freeShipping,  int? sellerId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String itemId,  double price,  String currencyId,  String condition,  double? originalPrice,  String? categoryId,  String? rootCategoryId,  bool freeShipping,  int? sellerId)  $default,) {final _that = this;
 switch (_that) {
 case _ProductOffer():
-return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.originalPrice,_that.categoryId,_that.freeShipping,_that.sellerId);case _:
+return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.originalPrice,_that.categoryId,_that.rootCategoryId,_that.freeShipping,_that.sellerId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -780,10 +783,10 @@ return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String itemId,  double price,  String currencyId,  String condition,  double? originalPrice,  String? categoryId,  bool freeShipping,  int? sellerId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String itemId,  double price,  String currencyId,  String condition,  double? originalPrice,  String? categoryId,  String? rootCategoryId,  bool freeShipping,  int? sellerId)?  $default,) {final _that = this;
 switch (_that) {
 case _ProductOffer() when $default != null:
-return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.originalPrice,_that.categoryId,_that.freeShipping,_that.sellerId);case _:
+return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.originalPrice,_that.categoryId,_that.rootCategoryId,_that.freeShipping,_that.sellerId);case _:
   return null;
 
 }
@@ -795,7 +798,7 @@ return $default(_that.itemId,_that.price,_that.currencyId,_that.condition,_that.
 
 
 class _ProductOffer extends ProductOffer {
-  const _ProductOffer({required this.itemId, required this.price, required this.currencyId, required this.condition, this.originalPrice, this.categoryId, this.freeShipping = false, this.sellerId}): super._();
+  const _ProductOffer({required this.itemId, required this.price, required this.currencyId, required this.condition, this.originalPrice, this.categoryId, this.rootCategoryId, this.freeShipping = false, this.sellerId}): super._();
   
 
 @override final  String itemId;
@@ -803,7 +806,10 @@ class _ProductOffer extends ProductOffer {
 @override final  String currencyId;
 @override final  String condition;
 @override final  double? originalPrice;
+/// Categoría hoja que devuelve MeLi en la oferta.
 @override final  String? categoryId;
+/// Categoría raíz MLA resuelta vía `path_from_root` (capa data).
+@override final  String? rootCategoryId;
 @override@JsonKey() final  bool freeShipping;
 @override final  int? sellerId;
 
@@ -817,16 +823,16 @@ _$ProductOfferCopyWith<_ProductOffer> get copyWith => __$ProductOfferCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductOffer&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.price, price) || other.price == price)&&(identical(other.currencyId, currencyId) || other.currencyId == currencyId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.freeShipping, freeShipping) || other.freeShipping == freeShipping)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProductOffer&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.price, price) || other.price == price)&&(identical(other.currencyId, currencyId) || other.currencyId == currencyId)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.originalPrice, originalPrice) || other.originalPrice == originalPrice)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.rootCategoryId, rootCategoryId) || other.rootCategoryId == rootCategoryId)&&(identical(other.freeShipping, freeShipping) || other.freeShipping == freeShipping)&&(identical(other.sellerId, sellerId) || other.sellerId == sellerId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,itemId,price,currencyId,condition,originalPrice,categoryId,freeShipping,sellerId);
+int get hashCode => Object.hash(runtimeType,itemId,price,currencyId,condition,originalPrice,categoryId,rootCategoryId,freeShipping,sellerId);
 
 @override
 String toString() {
-  return 'ProductOffer(itemId: $itemId, price: $price, currencyId: $currencyId, condition: $condition, originalPrice: $originalPrice, categoryId: $categoryId, freeShipping: $freeShipping, sellerId: $sellerId)';
+  return 'ProductOffer(itemId: $itemId, price: $price, currencyId: $currencyId, condition: $condition, originalPrice: $originalPrice, categoryId: $categoryId, rootCategoryId: $rootCategoryId, freeShipping: $freeShipping, sellerId: $sellerId)';
 }
 
 
@@ -837,7 +843,7 @@ abstract mixin class _$ProductOfferCopyWith<$Res> implements $ProductOfferCopyWi
   factory _$ProductOfferCopyWith(_ProductOffer value, $Res Function(_ProductOffer) _then) = __$ProductOfferCopyWithImpl;
 @override @useResult
 $Res call({
- String itemId, double price, String currencyId, String condition, double? originalPrice, String? categoryId, bool freeShipping, int? sellerId
+ String itemId, double price, String currencyId, String condition, double? originalPrice, String? categoryId, String? rootCategoryId, bool freeShipping, int? sellerId
 });
 
 
@@ -854,7 +860,7 @@ class __$ProductOfferCopyWithImpl<$Res>
 
 /// Create a copy of ProductOffer
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? price = null,Object? currencyId = null,Object? condition = null,Object? originalPrice = freezed,Object? categoryId = freezed,Object? freeShipping = null,Object? sellerId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? itemId = null,Object? price = null,Object? currencyId = null,Object? condition = null,Object? originalPrice = freezed,Object? categoryId = freezed,Object? rootCategoryId = freezed,Object? freeShipping = null,Object? sellerId = freezed,}) {
   return _then(_ProductOffer(
 itemId: null == itemId ? _self.itemId : itemId // ignore: cast_nullable_to_non_nullable
 as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
@@ -862,6 +868,7 @@ as double,currencyId: null == currencyId ? _self.currencyId : currencyId // igno
 as String,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
 as String,originalPrice: freezed == originalPrice ? _self.originalPrice : originalPrice // ignore: cast_nullable_to_non_nullable
 as double?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,rootCategoryId: freezed == rootCategoryId ? _self.rootCategoryId : rootCategoryId // ignore: cast_nullable_to_non_nullable
 as String?,freeShipping: null == freeShipping ? _self.freeShipping : freeShipping // ignore: cast_nullable_to_non_nullable
 as bool,sellerId: freezed == sellerId ? _self.sellerId : sellerId // ignore: cast_nullable_to_non_nullable
 as int?,

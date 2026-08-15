@@ -60,7 +60,6 @@ class CartController extends _$CartController {
         .toList();
     await getIt<EvaluateMissions>()(events);
     final claimed = await getIt<ClaimMissionRewards>()();
-    // Rellena slots y refresca saldo (incluye recompensas).
     await getIt<GetActiveMissions>()();
     ref.invalidate(missionsProvider);
     ref.invalidate(walletProvider);

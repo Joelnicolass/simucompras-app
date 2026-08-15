@@ -24,6 +24,12 @@ abstract class CatalogProduct with _$CatalogProduct {
   double? get price => bestOffer?.price;
   String? get currencyId => bestOffer?.currencyId;
   bool get freeShipping => bestOffer?.freeShipping ?? false;
+
+  /// Categoría hoja de la oferta (MeLi).
+  String? get categoryId => bestOffer?.categoryId;
+
+  /// Categoría raíz MLA (enriquecida en data). Preferida para misiones.
+  String? get rootCategoryId => bestOffer?.rootCategoryId;
 }
 
 @freezed
@@ -46,7 +52,12 @@ abstract class ProductOffer with _$ProductOffer {
     required String currencyId,
     required String condition,
     double? originalPrice,
+
+    /// Categoría hoja que devuelve MeLi en la oferta.
     String? categoryId,
+
+    /// Categoría raíz MLA resuelta vía `path_from_root` (capa data).
+    String? rootCategoryId,
     @Default(false) bool freeShipping,
     int? sellerId,
   }) = _ProductOffer;

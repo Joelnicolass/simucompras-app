@@ -199,7 +199,8 @@ class _ProductActions extends ConsumerWidget {
       originalUnitPrice: display.originalAmount,
       quantity: 1,
       isSuperOffer: display.isSuperOffer,
-      categoryId: offer?.categoryId,
+      // Preferimos raíz (misiones); fallback a hoja si no se pudo enriquecer.
+      categoryId: product.rootCategoryId ?? product.categoryId,
     );
   }
 
